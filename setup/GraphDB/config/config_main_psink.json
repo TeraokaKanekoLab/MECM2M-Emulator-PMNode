@@ -1,0 +1,192 @@
+{
+    "psinks": [
+        {
+            "property-label": "PSink",
+            "relation-label": {
+                "PArea": "PA0:0"
+            },
+            "data-property": {
+                "Label": "PS0",
+                "PSinkID": "1152921504606846976",
+                "PSinkType": "Router",
+                "SocketAddress": "",
+                "ServingIPv6Prefix": "c257:92a1:3bf8:4807::/64",
+                "MECIPv6Address": "192.168.1.1",
+                "Position": [
+                    35.5304,
+                    139.53
+                ],
+                "Description": "Description:PS0"
+            },
+            "object-property": [
+                {
+                    "from": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS0"
+                    },
+                    "to": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA0:0"
+                    },
+                    "type": "isInstalledIn"
+                },
+                {
+                    "from": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA0:0"
+                    },
+                    "to": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS0"
+                    },
+                    "type": "contains"
+                }
+            ]
+        },
+        {
+            "property-label": "PSink",
+            "relation-label": {
+                "PArea": "PA0:1"
+            },
+            "data-property": {
+                "Label": "PS1",
+                "PSinkID": "1152921504606846977",
+                "PSinkType": "Router",
+                "SocketAddress": "",
+                "ServingIPv6Prefix": "fc68:2251:affa:3388::/64",
+                "MECIPv6Address": "192.168.1.1",
+                "Position": [
+                    35.5305,
+                    139.5316
+                ],
+                "Description": "Description:PS1"
+            },
+            "object-property": [
+                {
+                    "from": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS1"
+                    },
+                    "to": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA0:1"
+                    },
+                    "type": "isInstalledIn"
+                },
+                {
+                    "from": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA0:1"
+                    },
+                    "to": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS1"
+                    },
+                    "type": "contains"
+                }
+            ]
+        },
+        {
+            "property-label": "PSink",
+            "relation-label": {
+                "PArea": "PA1:0"
+            },
+            "data-property": {
+                "Label": "PS2",
+                "PSinkID": "1152921504606846978",
+                "PSinkType": "Router",
+                "SocketAddress": "",
+                "ServingIPv6Prefix": "57df:318d:abf7:7512::/64",
+                "MECIPv6Address": "192.168.1.1",
+                "Position": [
+                    35.5319,
+                    139.5305
+                ],
+                "Description": "Description:PS2"
+            },
+            "object-property": [
+                {
+                    "from": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS2"
+                    },
+                    "to": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA1:0"
+                    },
+                    "type": "isInstalledIn"
+                },
+                {
+                    "from": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA1:0"
+                    },
+                    "to": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS2"
+                    },
+                    "type": "contains"
+                }
+            ]
+        },
+        {
+            "property-label": "PSink",
+            "relation-label": {
+                "PArea": "PA1:1"
+            },
+            "data-property": {
+                "Label": "PS3",
+                "PSinkID": "1152921504606846979",
+                "PSinkType": "Router",
+                "SocketAddress": "",
+                "ServingIPv6Prefix": "b40d:a560:1109:bf1d::/64",
+                "MECIPv6Address": "192.168.1.1",
+                "Position": [
+                    35.5317,
+                    139.5311
+                ],
+                "Description": "Description:PS3"
+            },
+            "object-property": [
+                {
+                    "from": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS3"
+                    },
+                    "to": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA1:1"
+                    },
+                    "type": "isInstalledIn"
+                },
+                {
+                    "from": {
+                        "property-label": "PArea",
+                        "data-property": "Label",
+                        "value": "PA1:1"
+                    },
+                    "to": {
+                        "property-label": "PSink",
+                        "data-property": "Label",
+                        "value": "PS3"
+                    },
+                    "type": "contains"
+                }
+            ]
+        }
+    ]
+}

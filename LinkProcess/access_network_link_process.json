@@ -1,0 +1,16 @@
+{
+    "socket_addresses": [
+        "/tmp/mecm2m/link-process/access-network_2305843009213693952.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693953.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693954.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693955.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693956.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693957.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693958.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693959.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693960.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693961.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693962.sock",
+        "/tmp/mecm2m/link-process/access-network_2305843009213693963.sock"
+    ]
+}

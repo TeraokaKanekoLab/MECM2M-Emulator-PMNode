@@ -1,0 +1,137 @@
+{
+    "pmnodes": [
+        {
+            "pmnode": [
+                {
+                    "property-label": "PMNode",
+                    "relation-label": {
+                        "HomeServer": "S1",
+                        "PNodeID": "0"
+                    },
+                    "data-property": {
+                        "label": "PMN1:0",
+                        "PNodeID": "0",
+                        "IPv6Pref": "0",
+                        "PNType": "Car",
+                        "Position": [35.5301, 139.5301],
+                        "Capability": "Accelarate",
+                        "Credential": "YES",
+                        "Description": "PMNodePMN1:0",
+                        "HomeIPv6Pref": "???",
+                        "Time": "2023-04-01 12:00:00",
+                        "Velocity": "",
+                        "Accelaration": "",
+                        "Direction": ""
+                    },
+                    "object-property": [
+                        
+                    ]
+                }
+            ],
+            "mserver": [
+                {
+                    "property-label": "MServer",
+                    "data-property": {
+                        "label": "MS1:0",
+                        "IPv6Address": "2001:0db8:85a3:8a2e:0370:7331",
+                        "ServedIPv6Pref": "",
+                        "Description": "MServerMS1:0"
+                    },
+                    "object-property": [
+                        {
+                            "from": {
+                                "property-label": "MServer",
+                                "data-property": "label",
+                                "value": "MS1:0"
+                            },
+                            "to": {
+                                "property-label": "Server",
+                                "data-property": "label",
+                                "value": "S1"
+                            },
+                            "type": "isLowerOf"
+                        },
+                        {
+                            "from": {
+                                "property-label": "Server",
+                                "data-property": "label",
+                                "value": "S1"
+                            },
+                            "to": {
+                                "property-label": "MServer",
+                                "data-property": "label",
+                                "value": "MS1:0"
+                            },
+                            "type": "isUpperOf"
+                        },
+                        {
+                            "from": {
+                                "property-label": "MServer",
+                                "data-property": "label",
+                                "value": "MS1:0"
+                            },
+                            "to": {
+                                "property-label": "PMNode",
+                                "data-property": "label",
+                                "value": "PMN1:0"
+                            },
+                            "type": "isRegardedAs"
+                        },
+                        {
+                            "from": {
+                                "property-label": "PMNode",
+                                "data-property": "label",
+                                "value": "PMN1:0"
+                            },
+                            "to": {
+                                "property-label": "MServer",
+                                "data-property": "label",
+                                "value": "MS1:0"
+                            },
+                            "type": "isRegardedAs"
+                        }
+                    ]
+                }
+            ],
+            "vmnodeh": [
+                {
+                    "property-label": "VMNodeH",
+                    "data-property": {
+                        "label": "VMNH1:0",
+                        "VNodeID": "VMNH100",
+                        "Port": "4000",
+                        "Description": "VMNodeHVMNH1:0"
+                    },
+                    "object-property": [
+                        {
+                            "from": {
+                                "property-label": "VMNodeH",
+                                "data-property": "label",
+                                "value": "VMNH1:0"
+                            },
+                            "to": {
+                                "property-label": "PMNode",
+                                "data-property": "label",
+                                "value": "PMN1:0"
+                            },
+                            "type": "isComposedOf"
+                        },
+                        {
+                            "from": {
+                                "property-label": "PMNode",
+                                "data-property": "label",
+                                "value": "PMN1:0"
+                            },
+                            "to": {
+                                "property-label": "VMNodeH",
+                                "data-property": "label",
+                                "value": "VMNH1:0"
+                            },
+                            "type": "isVirtualizedWith"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

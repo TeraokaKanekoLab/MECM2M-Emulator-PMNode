@@ -1,0 +1,181 @@
+{
+    "areas": {
+        "parea": [
+            {
+                "property-label": "PArea",
+                "data-property": {
+                    "Label": "PA0:0",
+                    "PAreaID": "0",
+                    "SW": [
+                        35.53,
+                        139.53
+                    ],
+                    "NE": [
+                        35.531,
+                        139.531
+                    ],
+                    "Description": "Description:PA0:0"
+                },
+                "object-property": []
+            },
+            {
+                "property-label": "PArea",
+                "data-property": {
+                    "Label": "PA0:1",
+                    "PAreaID": "1",
+                    "SW": [
+                        35.53,
+                        139.531
+                    ],
+                    "NE": [
+                        35.531,
+                        139.532
+                    ],
+                    "Description": "Description:PA0:1"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isEastOf"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isWestOf"
+                    }
+                ]
+            },
+            {
+                "property-label": "PArea",
+                "data-property": {
+                    "Label": "PA1:0",
+                    "PAreaID": "2",
+                    "SW": [
+                        35.531,
+                        139.53
+                    ],
+                    "NE": [
+                        35.532,
+                        139.531
+                    ],
+                    "Description": "Description:PA1:0"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isNorthOf"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isSouthOf"
+                    }
+                ]
+            },
+            {
+                "property-label": "PArea",
+                "data-property": {
+                    "Label": "PA1:1",
+                    "PAreaID": "3",
+                    "SW": [
+                        35.531,
+                        139.531
+                    ],
+                    "NE": [
+                        35.532,
+                        139.532
+                    ],
+                    "Description": "Description:PA1:1"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isNorthOf"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isSouthOf"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isEastOf"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isWestOf"
+                    }
+                ]
+            }
+        ]
+    }
+}

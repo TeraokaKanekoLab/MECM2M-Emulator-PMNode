@@ -1,0 +1,16 @@
+{
+    "psnodes": {
+        "psnode": [
+            {
+                "data-property": {
+                    "Position": [
+                        35.5304,
+                        139.531
+                    ],
+                    "Capability": "MaxTemp",
+                    "Credential": "YES"
+                }
+            }
+        ]
+    }
+}

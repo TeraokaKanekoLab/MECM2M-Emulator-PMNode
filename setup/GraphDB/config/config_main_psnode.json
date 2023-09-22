@@ -1,0 +1,1744 @@
+{
+    "psnodes": [
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS0",
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "PSN0",
+                    "PNodeID": "2305843009213693952",
+                    "PNodeType": "Temp_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5307,
+                        139.5307
+                    ],
+                    "Capability": "MaxTemp",
+                    "Credential": "YES",
+                    "SessionKey": "pyYsb9mvuJ",
+                    "Description": "Description:PSN0"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "VSN0",
+                    "VNodeID": "9223372036854775808",
+                    "SocketAddress": "192.168.1.1:11000",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN0"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN0"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN0"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN0"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN0"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS0",
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "PSN1",
+                    "PNodeID": "2305843009213693953",
+                    "PNodeType": "Humid_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.531,
+                        139.5303
+                    ],
+                    "Capability": "MaxHumid",
+                    "Credential": "YES",
+                    "SessionKey": "aEwHSl4qP9",
+                    "Description": "Description:PSN1"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "VSN1",
+                    "VNodeID": "9223372036854775809",
+                    "SocketAddress": "192.168.1.1:11001",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN1"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN1"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN1"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN1"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN1"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS0",
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "PSN2",
+                    "PNodeID": "2305843009213693954",
+                    "PNodeType": "Anemometer",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5308,
+                        139.5307
+                    ],
+                    "Capability": "MaxWind",
+                    "Credential": "YES",
+                    "SessionKey": "4O2qPozPeq",
+                    "Description": "Description:PSN2"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:0"
+                },
+                "data-property": {
+                    "Label": "VSN2",
+                    "VNodeID": "9223372036854775810",
+                    "SocketAddress": "192.168.1.1:11002",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN2"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN2"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN2"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN2"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN2"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN2"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS1",
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "PSN3",
+                    "PNodeID": "2305843009213693955",
+                    "PNodeType": "Temp_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5302,
+                        139.5314
+                    ],
+                    "Capability": "MaxTemp",
+                    "Credential": "YES",
+                    "SessionKey": "ttqI8DHxfo",
+                    "Description": "Description:PSN3"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "VSN3",
+                    "VNodeID": "9223372036854775811",
+                    "SocketAddress": "192.168.1.1:11003",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN3"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN3"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN3"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN3"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN3"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN3"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS1",
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "PSN4",
+                    "PNodeID": "2305843009213693956",
+                    "PNodeType": "Humid_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5302,
+                        139.5314
+                    ],
+                    "Capability": "MaxHumid",
+                    "Credential": "YES",
+                    "SessionKey": "iXlfRUVVPv",
+                    "Description": "Description:PSN4"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "VSN4",
+                    "VNodeID": "9223372036854775812",
+                    "SocketAddress": "192.168.1.1:11004",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN4"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN4"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN4"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN4"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN4"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN4"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS1",
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "PSN5",
+                    "PNodeID": "2305843009213693957",
+                    "PNodeType": "Anemometer",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5306,
+                        139.5319
+                    ],
+                    "Capability": "MaxWind",
+                    "Credential": "YES",
+                    "SessionKey": "1irZJXntMx",
+                    "Description": "Description:PSN5"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA0:1"
+                },
+                "data-property": {
+                    "Label": "VSN5",
+                    "VNodeID": "9223372036854775813",
+                    "SocketAddress": "192.168.1.1:11005",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN5"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN5"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN5"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN5"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN5"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA0:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN5"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS2",
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "PSN6",
+                    "PNodeID": "2305843009213693958",
+                    "PNodeType": "Temp_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5316,
+                        139.5305
+                    ],
+                    "Capability": "MaxTemp",
+                    "Credential": "YES",
+                    "SessionKey": "Pg7yUsrh3A",
+                    "Description": "Description:PSN6"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "VSN6",
+                    "VNodeID": "9223372036854775814",
+                    "SocketAddress": "192.168.1.1:11006",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN6"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN6"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN6"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN6"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN6"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN6"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS2",
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "PSN7",
+                    "PNodeID": "2305843009213693959",
+                    "PNodeType": "Humid_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5318,
+                        139.5305
+                    ],
+                    "Capability": "MaxHumid",
+                    "Credential": "YES",
+                    "SessionKey": "ZOI5TwwM09",
+                    "Description": "Description:PSN7"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "VSN7",
+                    "VNodeID": "9223372036854775815",
+                    "SocketAddress": "192.168.1.1:11007",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN7"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN7"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN7"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN7"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN7"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN7"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS2",
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "PSN8",
+                    "PNodeID": "2305843009213693960",
+                    "PNodeType": "Anemometer",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5318,
+                        139.5308
+                    ],
+                    "Capability": "MaxWind",
+                    "Credential": "YES",
+                    "SessionKey": "MOnOd7YXwy",
+                    "Description": "Description:PSN8"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS2"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:0"
+                },
+                "data-property": {
+                    "Label": "VSN8",
+                    "VNodeID": "9223372036854775816",
+                    "SocketAddress": "192.168.1.1:11008",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN8"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN8"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN8"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN8"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN8"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:0"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN8"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS3",
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "PSN9",
+                    "PNodeID": "2305843009213693961",
+                    "PNodeType": "Temp_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5314,
+                        139.5317
+                    ],
+                    "Capability": "MaxTemp",
+                    "Credential": "YES",
+                    "SessionKey": "QCDirsiDqm",
+                    "Description": "Description:PSN9"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "VSN9",
+                    "VNodeID": "9223372036854775817",
+                    "SocketAddress": "192.168.1.1:11009",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN9"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN9"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN9"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN9"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN9"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN9"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS3",
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "PSN10",
+                    "PNodeID": "2305843009213693962",
+                    "PNodeType": "Humid_Sensor",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5315,
+                        139.5315
+                    ],
+                    "Capability": "MaxHumid",
+                    "Credential": "YES",
+                    "SessionKey": "0cDBd2QmH5",
+                    "Description": "Description:PSN10"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "VSN10",
+                    "VNodeID": "9223372036854775818",
+                    "SocketAddress": "192.168.1.1:11010",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN10"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN10"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN10"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN10"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN10"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN10"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        },
+        {
+            "psnode": {
+                "property-label": "PSNode",
+                "relation-label": {
+                    "PSink": "PS3",
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "PSN11",
+                    "PNodeID": "2305843009213693963",
+                    "PNodeType": "Anemometer",
+                    "VNodeModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "SocketAddress": "",
+                    "Position": [
+                        35.5315,
+                        139.5312
+                    ],
+                    "Capability": "MaxWind",
+                    "Credential": "YES",
+                    "SessionKey": "oA4Otm2rPN",
+                    "Description": "Description:PSN11"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "to": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "type": "isConnectedTo"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSink",
+                            "data-property": "Label",
+                            "value": "PS3"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "type": "aggregates"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "type": "contains"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    }
+                ]
+            },
+            "vsnode": {
+                "property-label": "VSNode",
+                "relation-label": {
+                    "PArea": "PA1:1"
+                },
+                "data-property": {
+                    "Label": "VSN11",
+                    "VNodeID": "9223372036854775819",
+                    "SocketAddress": "192.168.1.1:11011",
+                    "SoftwareModule": "/home/rand/MECM2M-Emulator/MECServer/VSNode/main",
+                    "Description": "Description:VSN11"
+                },
+                "object-property": [
+                    {
+                        "from": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN11"
+                        },
+                        "type": "isVirtualizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN11"
+                        },
+                        "to": {
+                            "property-label": "PSNode",
+                            "data-property": "Label",
+                            "value": "PSN11"
+                        },
+                        "type": "isPhysicalizedBy"
+                    },
+                    {
+                        "from": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN11"
+                        },
+                        "to": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "type": "isInstalledIn"
+                    },
+                    {
+                        "from": {
+                            "property-label": "PArea",
+                            "data-property": "Label",
+                            "value": "PA1:1"
+                        },
+                        "to": {
+                            "property-label": "VSNode",
+                            "data-property": "Label",
+                            "value": "VSN11"
+                        },
+                        "type": "contains"
+                    }
+                ]
+            }
+        }
+    ]
+}
