@@ -39,7 +39,7 @@ type ResolveArea struct {
 	TTL time.Time
 
 	// etc.
-	DestSocketAddr string // リンクプロセスが宛先のソケットアドレスを認識するために必要
+	Descriptor AreaDescriptor // 転送相手からADの内容を得るため
 }
 
 // エリアマッピングを取得するためのフォーマット
@@ -67,11 +67,7 @@ type ResolveNode struct {
 	NodeType     string
 
 	// output
-	VNodeID       string
-	SocketAddress string
-
-	// etc.
-	DestSocketAddr string // リンクプロセスが宛先のソケットアドレスを認識するために必要
+	VNode VNodeSet
 }
 
 type ResolveDataByNode struct {
@@ -85,9 +81,6 @@ type ResolveDataByNode struct {
 	// output
 	//VNodeID 	string (dup)
 	Values []Value
-
-	// etc.
-	DestSocketAddr string // リンクプロセスが宛先のソケットアドレスを認識するために必要
 }
 
 type ResolveDataByArea struct {
@@ -124,7 +117,7 @@ type ConditionInput struct {
 
 type AreaDescriptor struct {
 	PAreaID  []string
-	VSNode   map[string]string // VNodeID と SocketAddressのマッピング
+	VNode    []VNodeSet
 	TTL      time.Time
 	ServerIP []string // ノード解決時に使いたい，MECサーバのIPアドレス
 }
@@ -163,4 +156,10 @@ type DataForRegist struct {
 	PSinkID    string
 	Lat        float64
 	Lon        float64
+}
+
+type VNodeSet struct {
+	VNodeID              string
+	VNodeSocketAddress   string
+	VMNodeRSocketAddress string
 }

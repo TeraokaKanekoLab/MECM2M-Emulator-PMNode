@@ -585,7 +585,7 @@ func commandAPIExecution(command string, decoder *gob.Decoder, encoder *gob.Enco
 			}
 		}
 		node_input := &m2mapi.ResolveNode{
-			VNodeID: VPointID,
+			AD: VPointID,
 		}
 		if err := encoder.Encode(node_input); err != nil {
 			message.MyError(err, "commandAPIExecution > node > encoder.Encode")

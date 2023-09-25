@@ -94,7 +94,9 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			// PNodeID, Capability, Timestamp, Value, PSinkID, Lat, Lon
 			err := rows.Scan(&field[0], &field[1], &field[2], &field[3], &field[4], &field[5], &field[6])
 			if err != nil {
+				fmt.Println(err)
 				http.Error(w, "resolvePastNode: Error scanning sensing data", http.StatusInternalServerError)
+				return
 			}
 			vnode_id = convertID(field[0], 63)
 			valFloat, _ := strconv.ParseFloat(field[3], 64)
@@ -112,6 +114,7 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		fmt.Println(string(jsonData))
 		fmt.Fprintf(w, "%v\n", string(jsonData))
 	} else {
 		http.Error(w, "resolvePastNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)
