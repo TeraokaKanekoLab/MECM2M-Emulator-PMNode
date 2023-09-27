@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
+	"mecm2m-Emulator-PMNode/pkg/m2mapp"
 	"mecm2m-Emulator-PMNode/pkg/psnode"
 	"net/http"
 	"os"
@@ -20,9 +21,9 @@ func main() {
 
 	switch args[1] {
 	case "area":
-		data = m2mapi.ResolveArea{
-			NE: m2mapi.SquarePoint{Lat: 35.531, Lon: 139.531},
-			SW: m2mapi.SquarePoint{Lat: 35.53, Lon: 139.53},
+		data = m2mapp.ResolveAreaInput{
+			NE: m2mapp.SquarePoint{Lat: 35.531, Lon: 139.531},
+			SW: m2mapp.SquarePoint{Lat: 35.53, Lon: 139.53},
 		}
 		url = "http://localhost:8080/m2mapi/area"
 	case "node":

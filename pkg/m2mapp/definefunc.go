@@ -2,6 +2,8 @@ package m2mapp
 
 import (
 	"fmt"
+	"mecm2m-Emulator-PMNode/pkg/m2mapi"
+	"time"
 )
 
 type App struct {
@@ -21,6 +23,21 @@ type AppInputData struct {
 	Timeout    int
 	Action     string
 	Parameter  float64
+}
+
+type ResolveAreaInput struct {
+	// input
+	NE SquarePoint `json:"ne"`
+	SW SquarePoint `json:"sw"`
+}
+
+type ResolveAreaOutput struct {
+	// output
+	AD  string    `json:"ad"`
+	TTL time.Time `json:"ttl"`
+
+	// etc.
+	Descriptor m2mapi.AreaDescriptor `json:"area-descriptor"` // PMNodeにADに紐づく情報を与えるため
 }
 
 type SquarePoint struct {
