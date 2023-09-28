@@ -22,15 +22,15 @@ func main() {
 	switch args[1] {
 	case "area":
 		data = m2mapp.ResolveAreaInput{
-			NE: m2mapp.SquarePoint{Lat: 35.531, Lon: 139.531},
-			SW: m2mapp.SquarePoint{Lat: 35.53, Lon: 139.53},
+			NE: m2mapp.SquarePoint{Lat: 35.533, Lon: 139.531},
+			SW: m2mapp.SquarePoint{Lat: 35.532, Lon: 139.53},
 		}
 		url = "http://localhost:8080/m2mapi/area"
 	case "node":
-		data = m2mapi.ResolveNode{
-			AD:           args[2],
-			Capabilities: []string{"MaxTemp", "MaxHumid", "MaxWind"},
-			NodeType:     "VSNode",
+		data = m2mapp.ResolveNodeInput{
+			AD:         args[2],
+			Capability: []string{"MaxTemp", "MaxHumid", "MaxWind"},
+			NodeType:   "VSNode",
 		}
 		url = "http://localhost:8080/m2mapi/node"
 	case "past_node":

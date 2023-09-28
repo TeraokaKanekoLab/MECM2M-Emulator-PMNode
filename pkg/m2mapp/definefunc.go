@@ -40,6 +40,18 @@ type ResolveAreaOutput struct {
 	Descriptor m2mapi.AreaDescriptor `json:"area-descriptor"` // PMNodeにADに紐づく情報を与えるため
 }
 
+type ResolveNodeInput struct {
+	// input
+	AD         string   `json:"ad"`
+	Capability []string `json:"capability"`
+	NodeType   string   `json:"node-type"`
+}
+
+type ResolveNodeOutput struct {
+	// output
+	VNode []m2mapi.VNodeSet `json:"vnode"`
+}
+
 type SquarePoint struct {
 	Lat float64
 	Lon float64

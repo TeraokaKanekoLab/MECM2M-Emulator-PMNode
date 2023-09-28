@@ -89,12 +89,8 @@ func resolveArea(w http.ResponseWriter, r *http.Request) {
 
 		// GraphDBへの問い合わせ
 		results := resolveAreaFunction(inputFormat.SW, inputFormat.NE)
-		results_app := m2mapp.ResolveAreaOutput{
-			AD:  results.AD,
-			TTL: results.TTL,
-		}
 
-		fmt.Fprintf(w, "%v\n", results_app)
+		fmt.Fprintf(w, "%v\n", results)
 	} else {
 		http.Error(w, "resolvePoint: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -138,13 +134,13 @@ func resolveNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolveNode: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.ResolveNode{}
+		inputFormat := &m2mapp.ResolveNodeInput{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "resolveNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
 		// GraphDBへの問い合わせ
-		results := resolveNodeFunction(inputFormat.AD, inputFormat.Capabilities, inputFormat.NodeType)
+		results := resolveNodeFunction(inputFormat.AD, inputFormat.Capability, inputFormat.NodeType)
 
 		fmt.Fprintf(w, "%v\n", results)
 	} else {
@@ -306,13 +302,14 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func resolveAreaFunction(sw, ne m2mapp.SquarePoint) m2mapi.ResolveArea {
+func resolveAreaFunction(sw, ne m2mapp.SquarePoint) m2mapp.ResolveAreaOutput {
 	// 接続先MEC Serverに入力内容をそのまま転送する
-	var results m2mapi.ResolveArea
+	var results m2mapp.ResolveAreaOutput
 
-	transmit_request := m2mapp.ResolveAreaInput{
-		SW: m2mapp.SquarePoint{Lat: sw.Lat, Lon: sw.Lon},
-		NE: m2mapp.SquarePoint{Lat: ne.Lat, Lon: ne.Lon},
+	transmit_request := m2mapi.ResolveArea{
+		SW:         m2mapi.SquarePoint{Lat: sw.Lat, Lon: sw.Lon},
+		NE:         m2mapi.SquarePoint{Lat: ne.Lat, Lon: ne.Lon},
+		PMNodeFlag: true,
 	}
 	transmit_data, _ := json.Marshal(transmit_request)
 	mec_server_url := "http://" + connected_mec_server_ip_port + "/m2mapi/area"
@@ -346,13 +343,22 @@ func resolveAreaFunction(sw, ne m2mapp.SquarePoint) m2mapi.ResolveArea {
 	return results
 }
 
-func resolveNodeFunction(ad string, caps []string, node_type string) []m2mapi.ResolveNode {
+func resolveNodeFunction(ad string, caps []string, node_type string) m2mapp.ResolveNodeOutput {
 	// 接続先MEC Serverに入力内容をそのまま転送する
+	area_desc := ad_cache[ad]
+	var parea_id, vnode_id []string
+	for _, ad_detail := range area_desc.AreaDescriptorDetail {
+		parea_id = append(parea_id, ad_detail.PAreaID...)
+		for _, vnode := range ad_detail.VNode {
+			vnode_id = append(vnode_id, vnode.VNodeID)
+		}
+	}
 
 	transmit_request := m2mapi.ResolveNode{
-		AD:           ad,
-		Capabilities: caps,
-		NodeType:     node_type,
+		PAreaID:    parea_id,
+		VNodeID:    vnode_id,
+		Capability: caps,
+		NodeType:   node_type,
 	}
 	transmit_data, _ := json.Marshal(transmit_request)
 	mec_server_url := "http://" + connected_mec_server_ip_port + "/m2mapi/node"
@@ -367,7 +373,7 @@ func resolveNodeFunction(ad string, caps []string, node_type string) []m2mapi.Re
 		panic(err)
 	}
 
-	var node_output []m2mapi.ResolveNode
+	var node_output m2mapp.ResolveNodeOutput
 	if err = json.Unmarshal(body, &node_output); err != nil {
 		fmt.Println("Error Unmarhsaling: ", err)
 	}
@@ -513,9 +519,9 @@ func resolvePastAreaFunction(ad, capability, node_type string, period m2mapi.Per
 	if node_type == "All" || node_type == "VMNode" {
 		// はじめに，ADに登録されているPAreaIDに存在するPMNodeとそのソケットアドレスを検索する
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
-		for _, vmnode_result := range vmnode_results_by_resolve_node {
+		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNode[0].VNodeID,
+				VNodeID:    vmnode_result.VNodeID,
 				Capability: capability,
 				Period:     m2mapi.PeriodInput{Start: period.Start, End: period.End},
 			}
@@ -525,7 +531,7 @@ func resolvePastAreaFunction(ad, capability, node_type string, period m2mapi.Per
 				fmt.Println("Error marhsaling data: ", err)
 				return null_data
 			}
-			transmit_url := "http://" + vmnode_result.VNode[0].VNodeSocketAddress + "/primpai/data/past/node"
+			transmit_url := "http://" + vmnode_result.VNodeSocketAddress + "/primpai/data/past/node"
 			response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 			if err != nil {
 				fmt.Println("Error making request: ", err)
@@ -559,9 +565,9 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 	if node_type == "All" || node_type == "VSNode" {
 		// はじめに，ADに登録されているVSNodeのうち，指定したCapabilityを持つものだけを抽出する
 		vsnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
-		for _, vsnode_result := range vsnode_results_by_resolve_node {
+		for _, vsnode_result := range vsnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vsnode_result.VNode[0].VNodeID,
+				VNodeID:    vsnode_result.VNodeID,
 				Capability: capability,
 			}
 
@@ -571,7 +577,7 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 				return null_data
 			}
 			// VSNodeへ転送
-			transmit_url := "http://" + vsnode_result.VNode[0].VNodeSocketAddress + "/primapi/data/current/node"
+			transmit_url := "http://" + vsnode_result.VNodeSocketAddress + "/primapi/data/current/node"
 			response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 			if err != nil {
 				fmt.Println("Error making request: ", err)
@@ -597,9 +603,9 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 	if node_type == "All" || node_type == "VMNode" {
 		// はじめに，ADに登録されているPAreaIDに存在するPMNodeとそのソケットアドレスを検索する
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
-		for _, vmnode_result := range vmnode_results_by_resolve_node {
+		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNode[0].VNodeID,
+				VNodeID:    vmnode_result.VNodeID,
 				Capability: capability,
 			}
 
@@ -609,7 +615,7 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 				return null_data
 			}
 			// VSNodeへ転送
-			transmit_url := "http://" + vmnode_result.VNode[0].VMNodeRSocketAddress + "/primpai/data/current/node"
+			transmit_url := "http://" + vmnode_result.VMNodeRSocketAddress + "/primpai/data/current/node"
 			response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 			if err != nil {
 				fmt.Println("Error making request: ", err)
@@ -643,9 +649,9 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 	if node_type == "All" || node_type == "VSNode" {
 		// はじめに，ADに登録されているVSNodeのうち，指定したCapabilityを持つものだけを抽出する
 		vsnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
-		for _, vsnode_result := range vsnode_results_by_resolve_node {
+		for _, vsnode_result := range vsnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vsnode_result.VNode[0].VNodeID,
+				VNodeID:    vsnode_result.VNodeID,
 				Capability: capability,
 				Condition:  condition,
 			}
@@ -656,7 +662,7 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 				return null_data
 			}
 			// VSNodeへ転送
-			transmit_url := "http://" + vsnode_result.VNode[0].VNodeSocketAddress + "/primapi/data/condition/node"
+			transmit_url := "http://" + vsnode_result.VNodeSocketAddress + "/primapi/data/condition/node"
 			response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 			if err != nil {
 				fmt.Println("Error making request: ", err)
@@ -682,9 +688,9 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 	if node_type == "All" || node_type == "VMNode" {
 		// はじめに，ADに登録されているPAreaIDに存在するPMNodeとそのソケットアドレスを検索する
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
-		for _, vmnode_result := range vmnode_results_by_resolve_node {
+		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNode[0].VNodeID,
+				VNodeID:    vmnode_result.VNodeID,
 				Capability: capability,
 				Condition:  condition,
 			}
@@ -695,7 +701,7 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 				return null_data
 			}
 			// VMNodeRへ転送
-			transmit_url := "http://" + vmnode_result.VNode[0].VMNodeRSocketAddress + "/primpai/data/condition/node"
+			transmit_url := "http://" + vmnode_result.VMNodeRSocketAddress + "/primpai/data/condition/node"
 			response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 			if err != nil {
 				fmt.Println("Error making request: ", err)
