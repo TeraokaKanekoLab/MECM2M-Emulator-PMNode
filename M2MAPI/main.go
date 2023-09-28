@@ -346,19 +346,11 @@ func resolveAreaFunction(sw, ne m2mapp.SquarePoint) m2mapp.ResolveAreaOutput {
 func resolveNodeFunction(ad string, caps []string, node_type string) m2mapp.ResolveNodeOutput {
 	// 接続先MEC Serverに入力内容をそのまま転送する
 	area_desc := ad_cache[ad]
-	var parea_id, vnode_id []string
-	for _, ad_detail := range area_desc.AreaDescriptorDetail {
-		parea_id = append(parea_id, ad_detail.PAreaID...)
-		for _, vnode := range ad_detail.VNode {
-			vnode_id = append(vnode_id, vnode.VNodeID)
-		}
-	}
-
 	transmit_request := m2mapi.ResolveNode{
-		PAreaID:    parea_id,
-		VNodeID:    vnode_id,
-		Capability: caps,
-		NodeType:   node_type,
+		AreaDescriptorDetail: area_desc.AreaDescriptorDetail,
+		Capability:           caps,
+		NodeType:             node_type,
+		PMNodeFlag:           true,
 	}
 	transmit_data, _ := json.Marshal(transmit_request)
 	mec_server_url := "http://" + connected_mec_server_ip_port + "/m2mapi/node"

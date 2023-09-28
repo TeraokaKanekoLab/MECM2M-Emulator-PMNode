@@ -64,16 +64,16 @@ type ExtendAD struct {
 
 type ResolveNode struct {
 	// input
-	PAreaID    []string `json:"parea-id"`
-	VNodeID    []string `json:"vnode-id"`
-	Capability []string `json:"capability"`
-	NodeType   string   `json:"node-type"`
+	AreaDescriptorDetail map[string]AreaDescriptorDetail `json:"area-descriptor-detail"`
+	Capability           []string                        `json:"capability"`
+	NodeType             string                          `json:"node-type"`
 
 	// output
 	VNode []VNodeSet `json:"vnode"`
 
 	// etc.
 	TransmitFlag bool `json:"transmit-flag"` // M2M API -> M2M API のリクエスト転送か否かのフラグ
+	PMNodeFlag   bool `json:"pmnode-flag"`   // PMNode M2M API -> M2M API のリクエスト転送か否かのフラグ
 }
 
 type ResolveDataByNode struct {
