@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/gob"
@@ -11,6 +12,8 @@ import (
 	"math/big"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
 	"mecm2m-Emulator-PMNode/pkg/message"
+	"mecm2m-Emulator-PMNode/pkg/vmnoder"
+	"mecm2m-Emulator-PMNode/pkg/vsnode"
 	"net"
 	"net/http"
 	"os"
@@ -50,7 +53,7 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolvePastNode: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.ResolveDataByNode{}
+		inputFormat := &vmnoder.ResolvePastDataByNode{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "resolvePastNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
@@ -128,33 +131,42 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolveCurrentNode: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.ResolveDataByNode{}
+		inputFormat := &vmnoder.ResolveCurrentDataByNode{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "resolveCurrentNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		// PSNodeへリクエストを送信するためにリンクプロセスを噛ます
 		pnode_id := convertID(inputFormat.VNodeID, 63, 61)
-		link_process_socket_address := link_process_socket_address_path + "/access-network_" + pnode_id + ".sock"
-		connLinkProcess, err := net.Dial(protocol, link_process_socket_address)
+		request_psnode := vsnode.ResolveCurrentDataByNode{
+			PNodeID:    pnode_id,
+			Capability: inputFormat.Capability,
+		}
+		transmit_data, err := json.Marshal(request_psnode)
 		if err != nil {
-			message.MyError(err, "resolveCurrentNode > net.Dial")
-		}
-		decoderLinkProcess := gob.NewDecoder(connLinkProcess)
-		encoderLinkProcess := gob.NewEncoder(connLinkProcess)
-
-		syncFormatClient("CurrentNode", decoderLinkProcess, encoderLinkProcess)
-
-		if err := encoderLinkProcess.Encode(inputFormat); err != nil {
-			message.MyError(err, "resolveCurrentNode > encoderLinkProcess.Encode")
+			fmt.Println("Error marshaling data: ", err)
+			return
 		}
 
-		// PSNodeへ
+		port := trimPSNodePort(pnode_id)
+		transmit_url := "http://localhost:" + port + "/primapi/data/current/node"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request: ", err)
+			return
+		}
+		defer response_data.Body.Close()
 
-		// 受信する型は m2mapi.ResolveDataByNode
-		results := m2mapi.ResolveDataByNode{}
-		if err := decoderLinkProcess.Decode(&results); err != nil {
-			message.MyError(err, "resolveCurrentNode > decoderLinkProcess.Decode")
+		byteArray, _ := io.ReadAll(response_data.Body)
+		var vsnode_results vsnode.ResolveCurrentDataByNode
+		if err = json.Unmarshal(byteArray, &vsnode_results); err != nil {
+			fmt.Println("Error unmarshaling data: ", err)
+			return
+		}
+
+		results := vmnoder.ResolveCurrentDataByNode{
+			Values: []vmnoder.Value{
+				{Capability: vsnode_results.Capability, Time: vsnode_results.Timestamp, Value: vsnode_results.Value},
+			},
 		}
 
 		// 最後にM2M APIへ返送
@@ -459,4 +471,13 @@ func convertID(id string, pos ...int) string {
 		id_int.Xor(id_int, mask)
 	}
 	return id_int.String()
+}
+
+func trimPSNodePort(vnodeid string) string {
+	vnodeid_int, _ := strconv.ParseUint(vnodeid, 10, 64)
+	base_port_int, _ := strconv.Atoi(os.Getenv("PSNODE_BASE_PORT"))
+	mask := uint64(1<<60 - 1)
+	id_index := vnodeid_int & mask
+	port := strconv.Itoa(base_port_int + int(id_index))
+	return port
 }

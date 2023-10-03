@@ -162,7 +162,7 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// VNodeへリクエスト転送
-		results := resolvePastNodeFunction(inputFormat.VNodeID, inputFormat.Capability, inputFormat.SocketAddress, inputFormat.Period)
+		results := resolvePastNodeFunction(inputFormat.VNodeID, inputFormat.Capability[0], inputFormat.SocketAddress, inputFormat.Period)
 
 		fmt.Fprintf(w, "%v\n", results)
 	} else {
@@ -184,7 +184,7 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// VNodeへリクエスト転送
-		results := resolveCurrentNodeFunction(inputFormat.VNodeID, inputFormat.Capability, inputFormat.SocketAddress)
+		results := resolveCurrentNodeFunction(inputFormat.VNodeID, inputFormat.Capability[0], inputFormat.SocketAddress)
 
 		fmt.Fprintf(w, "%v\n", results)
 	} else {
@@ -206,7 +206,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// VNode へリクエスト転送
-		results := resolveConditionNodeFunction(inputFormat.VNodeID, inputFormat.Capability, inputFormat.SocketAddress, inputFormat.Condition)
+		results := resolveConditionNodeFunction(inputFormat.VNodeID, inputFormat.Capability[0], inputFormat.SocketAddress, inputFormat.Condition)
 
 		fmt.Fprintf(w, "%v\n", results)
 	} else {
@@ -376,8 +376,8 @@ func resolvePastNodeFunction(vnode_id, capability, socket_address string, period
 	null_data := m2mapi.ResolveDataByNode{VNodeID: "NULL"}
 
 	request_data := m2mapi.ResolveDataByNode{
-		VNodeID:       vnode_id,
-		Capability:    capability,
+		VNodeID: vnode_id,
+		//Capability:    capability,
 		Period:        m2mapi.PeriodInput{Start: period.Start, End: period.End},
 		SocketAddress: socket_address,
 	}
@@ -409,8 +409,8 @@ func resolveCurrentNodeFunction(vnode_id, capability, socket_address string) m2m
 	null_data := m2mapi.ResolveDataByNode{VNodeID: "NULL"}
 
 	request_data := m2mapi.ResolveDataByNode{
-		VNodeID:    vnode_id,
-		Capability: capability,
+		VNodeID: vnode_id,
+		//Capability: capability,
 	}
 	transmit_data, err := json.Marshal(request_data)
 	if err != nil {
@@ -439,9 +439,9 @@ func resolveConditionNodeFunction(vnode_id, capability, socket_address string, c
 	null_data := m2mapi.ResolveDataByNode{VNodeID: "NULL"}
 
 	request_data := m2mapi.ResolveDataByNode{
-		VNodeID:    vnode_id,
-		Capability: capability,
-		Condition:  condition,
+		VNodeID: vnode_id,
+		//Capability: capability,
+		Condition: condition,
 	}
 	transmit_data, err := json.Marshal(request_data)
 	if err != nil {
@@ -475,9 +475,9 @@ func resolvePastAreaFunction(ad, capability, node_type string, period m2mapi.Per
 	if node_type == "All" || node_type == "VSNode" {
 		for _, vsnode := range area_desc.AreaDescriptorDetail[""].VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vsnode.VNodeID,
-				Capability: capability,
-				Period:     m2mapi.PeriodInput{Start: period.Start, End: period.End},
+				VNodeID: vsnode.VNodeID,
+				//Capability: capability,
+				Period: m2mapi.PeriodInput{Start: period.Start, End: period.End},
 			}
 
 			transmit_data, err := json.Marshal(request_data)
@@ -513,9 +513,9 @@ func resolvePastAreaFunction(ad, capability, node_type string, period m2mapi.Per
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
 		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNodeID,
-				Capability: capability,
-				Period:     m2mapi.PeriodInput{Start: period.Start, End: period.End},
+				VNodeID: vmnode_result.VNodeID,
+				//Capability: capability,
+				Period: m2mapi.PeriodInput{Start: period.Start, End: period.End},
 			}
 
 			transmit_data, err := json.Marshal(request_data)
@@ -559,8 +559,8 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 		vsnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
 		for _, vsnode_result := range vsnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vsnode_result.VNodeID,
-				Capability: capability,
+				VNodeID: vsnode_result.VNodeID,
+				//Capability: capability,
 			}
 
 			transmit_data, err := json.Marshal(request_data)
@@ -597,8 +597,8 @@ func resolveCurrentAreaFunction(ad, capability, node_type string) m2mapi.Resolve
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
 		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNodeID,
-				Capability: capability,
+				VNodeID: vmnode_result.VNodeID,
+				//Capability: capability,
 			}
 
 			transmit_data, err := json.Marshal(request_data)
@@ -643,9 +643,9 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 		vsnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
 		for _, vsnode_result := range vsnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vsnode_result.VNodeID,
-				Capability: capability,
-				Condition:  condition,
+				VNodeID: vsnode_result.VNodeID,
+				//Capability: capability,
+				Condition: condition,
 			}
 
 			transmit_data, err := json.Marshal(request_data)
@@ -682,9 +682,9 @@ func resolveConditionAreaFunction(ad, capability, node_type string, condition m2
 		vmnode_results_by_resolve_node := resolveNodeFunction(ad, []string{capability}, node_type)
 		for _, vmnode_result := range vmnode_results_by_resolve_node.VNode {
 			request_data := m2mapi.ResolveDataByNode{
-				VNodeID:    vmnode_result.VNodeID,
-				Capability: capability,
-				Condition:  condition,
+				VNodeID: vmnode_result.VNodeID,
+				//Capability: capability,
+				Condition: condition,
 			}
 
 			transmit_data, err := json.Marshal(request_data)

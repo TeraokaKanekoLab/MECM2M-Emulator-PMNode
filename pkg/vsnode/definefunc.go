@@ -1,6 +1,13 @@
 package vsnode
 
-// VSNodeのソケットファイル群
-type VSNodeSocketFiles struct {
-	VSNodes []string `json:"vsnodes"`
+type ResolveCurrentDataByNode struct {
+	// input
+	// PSNode へのリクエスト転送
+	PNodeID    string `json:"pnode-id"`
+	Capability string `json:"capability"`
+
+	// output
+	//Capability (dup)
+	Timestamp string  `json:"timestamp"`
+	Value     float64 `json:"value"`
 }

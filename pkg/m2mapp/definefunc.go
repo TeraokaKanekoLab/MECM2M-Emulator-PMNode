@@ -52,6 +52,20 @@ type ResolveNodeOutput struct {
 	VNode []m2mapi.VNodeSet `json:"vnode"`
 }
 
+type ResolveDataByNodeInput struct {
+	// input
+	VNodeID       string      `json:"vnode-id"`
+	Capability    []string    `json:"capability"`
+	Period        PeriodInput `json:"period"`
+	SocketAddress string      `json:"socket-address"`
+}
+
+type ResolveDataByNodeOutput struct {
+	// output
+	VNodeID string  `json:"vnode-id"`
+	Values  []Value `json:"values"`
+}
+
 type SquarePoint struct {
 	Lat float64
 	Lon float64
@@ -60,6 +74,12 @@ type SquarePoint struct {
 type PeriodInput struct {
 	Start string
 	End   string
+}
+
+type Value struct {
+	Capability string  `json:"capability"`
+	Time       string  `json:"time"`
+	Value      float64 `json:"value"`
 }
 
 type Range struct {

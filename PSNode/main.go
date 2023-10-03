@@ -3,16 +3,17 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"math/big"
-	"math/rand"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
 	"mecm2m-Emulator-PMNode/pkg/message"
 	"mecm2m-Emulator-PMNode/pkg/psnode"
+	"mecm2m-Emulator-PMNode/pkg/vsnode"
 	"net"
 	"net/http"
 	"os"
@@ -73,25 +74,22 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolveCurrentNode: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.ResolveDataByNode{}
+		inputFormat := &vsnode.ResolveCurrentDataByNode{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "resolveCurrentNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		rand.Seed(time.Now().UnixNano())
-		value_min := 30.0
-		value_max := 40.0
-		value_value := value_min + rand.Float64()*(value_max-value_min)
-		values := []m2mapi.Value{}
-		value := m2mapi.Value{
+		minValue := big.NewInt(30)
+		maxValue := big.NewInt(40)
+		randomValue, _ := rand.Int(rand.Reader, new(big.Int).Sub(maxValue, minValue))
+		result := new(big.Int).Add(randomValue, minValue)
+		value_value := float64(result.Int64())
+
+		results := vsnode.ResolveCurrentDataByNode{
+			PNodeID:    inputFormat.PNodeID,
 			Capability: inputFormat.Capability,
 			Value:      value_value,
-			Time:       time.Now().Format(layout),
-		}
-		values = append(values, value)
-		results := m2mapi.ResolveDataByNode{
-			VNodeID: inputFormat.VNodeID,
-			Values:  values,
+			Timestamp:  time.Now().Format(layout),
 		}
 
 		jsonData, err := json.Marshal(results)
@@ -288,11 +286,12 @@ func generateSensordata(inputFormat *psnode.TimeSync) m2mapi.DataForRegist {
 			result.PNodeID = pnode_id
 			result.Capability = psnode_data_property["Capability"].(string)
 			result.Timestamp = inputFormat.CurrentTime.Format(layout)
-			rand.Seed(time.Now().UnixNano())
-			value_min := 30.0
-			value_max := 40.0
-			value := value_min + rand.Float64()*(value_max-value_min)
-			result.Value = value
+			minValue := big.NewInt(30)
+			maxValue := big.NewInt(40)
+			randomValue, _ := rand.Int(rand.Reader, new(big.Int).Sub(maxValue, minValue))
+			random_result := new(big.Int).Add(randomValue, minValue)
+			value_value := float64(random_result.Int64())
+			result.Value = value_value
 			result.PSinkID = psnode_relation_label["PSink"].(string)
 			position := psnode_data_property["Position"].([]interface{})
 			result.Lat = position[0].(float64)
@@ -302,6 +301,7 @@ func generateSensordata(inputFormat *psnode.TimeSync) m2mapi.DataForRegist {
 	return result
 }
 
+/*
 func registerSensingData(file string, t time.Time) {
 	// センサデータ登録に必要な情報の定義
 	var pnode_id, capability, psink_id string
@@ -407,6 +407,7 @@ func registerSensingData(file string, t time.Time) {
 	fmt.Println("Data Register Request at...", t)
 	fmt.Println("Data Register Response at...", t_now)
 }
+*/
 
 // VSNodeと型同期をするための関数
 func syncFormatServer(decoder *gob.Decoder, encoder *gob.Encoder) any {

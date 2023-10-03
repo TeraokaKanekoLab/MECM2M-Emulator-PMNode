@@ -35,13 +35,13 @@ type ResolveArea struct {
 	SW SquarePoint `json:"sw"`
 
 	// output
-	AD  string    `json:"ad"`
-	TTL time.Time `json:"ttl"`
+	AreaDescriptor AreaDescriptor `json:"area-descriptor"`
+	TTL            time.Time      `json:"ttl"`
 
 	// etc.
-	Descriptor   AreaDescriptorDetail `json:"area-descriptor"` // 転送相手からADの内容を得るため
-	TransmitFlag bool                 `json:"transmit-flag"`   // M2M API -> M2M API のリクエスト転送か否かのフラグ
-	PMNodeFlag   bool                 `json:"pmnode-flag"`     // PMNode M2M API -> M2M API のリクエスト転送か否かのフラグ
+	Descriptor   AreaDescriptorDetail `json:"descriptor"`    // 転送相手からADの内容を得るため
+	TransmitFlag bool                 `json:"transmit-flag"` // M2M API -> M2M API のリクエスト転送か否かのフラグ
+	PMNodeFlag   bool                 `json:"pmnode-flag"`   // PMNode M2M API -> M2M API のリクエスト転送か否かのフラグ
 }
 
 // エリアマッピングを取得するためのフォーマット
@@ -79,7 +79,7 @@ type ResolveNode struct {
 type ResolveDataByNode struct {
 	// input
 	VNodeID       string         `json:"vnode-id"`
-	Capability    string         `json:"capability"`
+	Capability    []string       `json:"capability"`
 	Period        PeriodInput    `json:"period"`
 	Condition     ConditionInput `json:"condition"`
 	SocketAddress string         `json:"socket-address"` // センサデータ取得対象となるVNodeのソケットアドレス

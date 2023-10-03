@@ -36,7 +36,7 @@ func main() {
 	case "past_node":
 		data = m2mapi.ResolveDataByNode{
 			VNodeID:       "9223372036854775808",
-			Capability:    "MaxTemp",
+			Capability:    []string{"MaxTemp"},
 			Period:        m2mapi.PeriodInput{Start: "2023-09-25 11:59:50 +0900 JST", End: "2023-09-25 12:00:05 +0900 JST"},
 			SocketAddress: "192.168.1.1:11000",
 		}
@@ -44,14 +44,14 @@ func main() {
 	case "current_node":
 		data = m2mapi.ResolveDataByNode{
 			VNodeID:       "9223372036854775808",
-			Capability:    "MaxTemp",
+			Capability:    []string{"MaxTemp"},
 			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/current/node"
 	case "condition_node":
 		data = m2mapi.ResolveDataByNode{
 			VNodeID:       "9223372036854775808",
-			Capability:    "MaxTemp",
+			Capability:    []string{"MaxTemp"},
 			Condition:     m2mapi.ConditionInput{Limit: m2mapi.Range{LowerLimit: 33, UpperLimit: 37}, Timeout: 10 * time.Second},
 			SocketAddress: "192.168.1.1:11000",
 		}
