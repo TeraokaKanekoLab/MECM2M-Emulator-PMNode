@@ -12,6 +12,7 @@ import (
 	"math/big"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
 	"mecm2m-Emulator-PMNode/pkg/message"
+	"mecm2m-Emulator-PMNode/pkg/psnode"
 	"mecm2m-Emulator-PMNode/pkg/vmnoder"
 	"mecm2m-Emulator-PMNode/pkg/vsnode"
 	"net"
@@ -35,7 +36,7 @@ type Format struct {
 }
 
 // 充足条件データ取得用のセンサデータのバッファ．(key, value) = (PNodeID, DataForRegist)
-var bufferSensorData = make(map[string]m2mapi.DataForRegist)
+var bufferSensorData = make(map[string]psnode.DataForRegist)
 var mu sync.Mutex
 var buffer_chan = make(chan string)
 
@@ -189,7 +190,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolveConditionNode: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.ResolveDataByNode{}
+		inputFormat := &vmnoder.ResolveConditionDataByNode{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "resolveConditionNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
@@ -212,7 +213,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 			select {
 			case <-timeoutContext.Done():
 				fmt.Println("Timeout Deadline")
-				nullData := m2mapi.ResolveDataByNode{
+				nullData := vmnoder.ResolveConditionDataByNode{
 					VNodeID: "Timeout",
 				}
 				jsonData, err := json.Marshal(nullData)
@@ -233,15 +234,13 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 				if val >= lowerLimit && val < upperLimit {
 					// 条件を満たすので，M2M APIへ結果を転送
 					register_data := bufferSensorData[inputPNodeID]
-					values := []m2mapi.Value{}
-					value := m2mapi.Value{
+					value := vmnoder.Value{
 						Capability: register_data.Capability,
 						Time:       register_data.Timestamp,
 						Value:      register_data.Value,
 					}
-					values = append(values, value)
-					data := m2mapi.ResolveDataByNode{
-						Values: values,
+					data := vmnoder.ResolveConditionDataByNode{
+						Values: value,
 					}
 					jsonData, err := json.Marshal(data)
 					if err != nil {
@@ -249,7 +248,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 					fmt.Fprintf(w, "%v\n", string(jsonData))
-					bufferSensorData[inputPNodeID] = m2mapi.DataForRegist{}
+					bufferSensorData[inputPNodeID] = psnode.DataForRegist{}
 					return
 				} else {
 					continue Loop
@@ -318,7 +317,7 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "dataRegister: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.DataForRegist{}
+		inputFormat := &psnode.DataForRegist{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "dataRegister: Error missmatching packet format", http.StatusInternalServerError)
 		}

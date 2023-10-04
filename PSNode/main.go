@@ -14,12 +14,10 @@ import (
 	"mecm2m-Emulator-PMNode/pkg/message"
 	"mecm2m-Emulator-PMNode/pkg/psnode"
 	"mecm2m-Emulator-PMNode/pkg/vsnode"
-	"net"
 	"net/http"
 	"os"
 	"runtime"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -167,25 +165,22 @@ func timeSync(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "timeSync: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		// VSNode へセンサデータを送信するために，リンクプロセスを噛ます
-		pnode_id := trimVSNodePort(r.Host)
+		// VSNode へセンサデータを送信する
+		vsnode_port := trimVSNodePort(r.Host)
 
-		link_process_socket_address := link_process_socket_address_path + "/access-network_" + pnode_id + ".sock"
-		connLinkProcess, err := net.Dial(protocol, link_process_socket_address)
-		if err != nil {
-			http.Error(w, "timeSync: net.Dial Error", http.StatusInternalServerError)
-		}
-		decoderLinkProcess := gob.NewDecoder(connLinkProcess)
-		encoderLinkProcess := gob.NewEncoder(connLinkProcess)
-
-		syncFormatClient("RegisterSensingData", decoderLinkProcess, encoderLinkProcess)
-
-		// ランダムなセンサデータを生成する関数
 		sensordata := generateSensordata(inputFormat)
-		if err := encoderLinkProcess.Encode(&sensordata); err != nil {
-			http.Error(w, "timeSync: encoderLinkProcess.Encode Error", http.StatusInternalServerError)
+		transmit_data, err := json.Marshal(sensordata)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
 		}
-
+		transmit_url := "http://localhost:" + vsnode_port + "//data/register"
+		_, err = http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request: ", err)
+			return
+		}
+		// VSNode へのセンサデータ送信完了
 	} else {
 		http.Error(w, "timeSync: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -261,8 +256,8 @@ func main() {
 }
 
 // センサデータの登録
-func generateSensordata(inputFormat *psnode.TimeSync) m2mapi.DataForRegist {
-	var result m2mapi.DataForRegist
+func generateSensordata(inputFormat *psnode.TimeSync) psnode.DataForRegist {
+	var result psnode.DataForRegist
 	// PSNodeのconfigファイルを検索し，ソケットファイルと一致する情報を取得する
 	psnode_json_file_path := os.Getenv("HOME") + os.Getenv("PROJECT_NAME") + "/setup/GraphDB/config/config_main_psnode.json"
 	psnodeJsonFile, err := os.Open(psnode_json_file_path)
@@ -465,19 +460,11 @@ func getGID() uint64 {
 	return n
 }
 
-func trimVSNodePort(address string) string {
-	host := strings.Split(address, ":")
-
-	var port int
-	if len(host) > 1 {
-		port, _ = strconv.Atoi(host[1])
-	} else {
-		return ""
-	}
-	base_port, _ := strconv.Atoi(os.Getenv("PSNODE_BASE_PORT"))
-	pnode_id_index := port - base_port
-	pnode_id_int := (0b0010 << 60) + pnode_id_index
-	pnode_id := strconv.Itoa(pnode_id_int)
-
-	return pnode_id
+func trimVSNodePort(pnode_id string) string {
+	pnodeid_int, _ := strconv.ParseUint(pnode_id, 10, 64)
+	base_port_int, _ := strconv.Atoi(os.Getenv("VSNODE_BASE_PORT"))
+	mask := uint64(1<<60 - 1)
+	id_index := pnodeid_int & mask
+	port := strconv.Itoa(base_port_int + int(id_index))
+	return port
 }
