@@ -150,7 +150,7 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 
 				vmnoder_data := vmnoder.ResolveCurrentDataByNode{
 					VNodeID:    vnode_set.VNodeID,
-					Capability: inputFormat.Capability[0],
+					Capability: inputFormat.Capability,
 				}
 				transmit_data, err := json.Marshal(vmnoder_data)
 				if err != nil {
@@ -260,7 +260,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 				defer wg.Done()
 				vmnoder_data := vmnoder.ResolveConditionDataByNode{
 					VNodeID:    vnode_set.VNodeID,
-					Capability: inputFormat.Capability[0],
+					Capability: inputFormat.Capability,
 					Condition:  vmnoder.ConditionInput{Limit: vmnoder.Range{LowerLimit: inputFormat.Condition.Limit.LowerLimit, UpperLimit: inputFormat.Condition.Limit.UpperLimit}, Timeout: inputFormat.Condition.Timeout},
 				}
 				transmit_data, err := json.Marshal(vmnoder_data)

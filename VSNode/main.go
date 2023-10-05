@@ -38,7 +38,20 @@ type Format struct {
 // 充足条件データ取得用のセンサデータのバッファ．(key, value) = (PNodeID, DataForRegist)
 var bufferSensorData = make(map[string]psnode.DataForRegist)
 var mu sync.Mutex
-var buffer_chan = make(chan string, 2)
+
+// センサデータがバッファされたときに通知するチャネル
+var buffer_chan = make(chan string)
+
+// ConditionAreaにおいて，他のgoroutineでセンサデータを検知してM2M APIへ送信したことを知らせるチャネル．
+var sensing_chan = make(chan string)
+
+// VSNode と PSNode のリレーションを保持しておくためのマッピング
+type PSNode struct {
+	PNodeID    string
+	Capability string
+}
+
+var vsnode_psnode_mapping = make(map[string]PSNode)
 
 func init() {
 	// .envファイルの読み込み
@@ -138,9 +151,10 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 		}
 
 		pnode_id := convertID(inputFormat.VNodeID, 63, 61)
+		capability := vsnode_psnode_mapping[inputFormat.VNodeID].Capability
 		request_psnode := vsnode.ResolveCurrentDataByNode{
 			PNodeID:    pnode_id,
-			Capability: inputFormat.Capability,
+			Capability: capability,
 		}
 		transmit_data, err := json.Marshal(request_psnode)
 		if err != nil {
@@ -197,8 +211,6 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 
 		// PSNodeからの定期的なセンサデータ登録で受信するセンサデータを読み込み，Conditionと合致する内容であれば，M2M APIへ返送する
 		inputPNodeID := convertID(inputFormat.VNodeID, 63, 61)
-		buffer_data := bufferSensorData[inputPNodeID]
-		val := buffer_data.Value
 
 		lowerLimit := inputFormat.Condition.Limit.LowerLimit
 		upperLimit := inputFormat.Condition.Limit.UpperLimit
@@ -223,36 +235,56 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 				}
 				fmt.Fprintf(w, "%v\n", string(jsonData))
 				return
-			case <-buffer_chan:
-				mu.Lock()
-				if val != bufferSensorData[inputPNodeID].Value {
-					// バッファデータ更新
-					val = bufferSensorData[inputPNodeID].Value
-				}
-				mu.Unlock()
+			case receive_string := <-buffer_chan:
+				if receive_string == inputPNodeID {
+					var val_val float64
+					var val_capability string
+					mu.Lock()
+					val_val = bufferSensorData[inputPNodeID].Value
+					val_capability = bufferSensorData[inputPNodeID].Capability
+					mu.Unlock()
 
-				if val >= lowerLimit && val < upperLimit {
-					// 条件を満たすので，M2M APIへ結果を転送
-					register_data := bufferSensorData[inputPNodeID]
-					value := vmnoder.Value{
-						Capability: register_data.Capability,
-						Time:       register_data.Timestamp,
-						Value:      register_data.Value,
-					}
-					data := vmnoder.ResolveConditionDataByNode{
-						Values: value,
-					}
-					jsonData, err := json.Marshal(data)
-					if err != nil {
-						http.Error(w, "resolveConditionNode: Error marshaling data", http.StatusInternalServerError)
+					ok := includeCapability(inputFormat.Capability, val_capability)
+					if ok && val_val >= lowerLimit && val_val <= upperLimit {
+						// 条件を満たすので，M2M APIへ結果を転送
+						register_data := bufferSensorData[inputPNodeID]
+						value := vmnoder.Value{
+							Capability: register_data.Capability,
+							Time:       register_data.Timestamp,
+							Value:      register_data.Value,
+						}
+						data := vmnoder.ResolveConditionDataByNode{
+							Values: value,
+						}
+						jsonData, err := json.Marshal(data)
+						if err != nil {
+							http.Error(w, "resolveConditionNode: Error marshaling data", http.StatusInternalServerError)
+							return
+						}
+						fmt.Fprintf(w, "%v\n", string(jsonData))
+						bufferSensorData[inputPNodeID] = psnode.DataForRegist{}
+						sensing_chan <- "sensing condition data"
 						return
+					} else {
+						continue Loop
 					}
-					fmt.Fprintf(w, "%v\n", string(jsonData))
-					bufferSensorData[inputPNodeID] = psnode.DataForRegist{}
-					return
 				} else {
-					continue Loop
+					fmt.Println("not match")
+					buffer_chan <- receive_string
+					//continue Loop
 				}
+			case <-sensing_chan:
+				fmt.Println("recieve sensing data in other goroutine")
+				nullData := m2mapi.ResolveDataByNode{
+					VNodeID: "NULL",
+				}
+				jsonData, err := json.Marshal(nullData)
+				if err != nil {
+					http.Error(w, "resolveConditionNode: Error marshaling data", http.StatusInternalServerError)
+					break Loop
+				}
+				fmt.Fprintf(w, "%v\n", string(jsonData))
+				return
 			}
 		}
 
@@ -352,7 +384,6 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 		defer stmt.Close()
 
 		_, err = stmt.Exec(inputFormat.PNodeID, inputFormat.Capability, inputFormat.Timestamp, inputFormat.Value, inputFormat.PSinkID, inputFormat.Lat, inputFormat.Lon)
-		//_, err = stmt.Exec(inputFormat.PNodeID, inputFormat.Capability, inputFormat.Timestamp[:30])
 		if err != nil {
 			http.Error(w, "dataRegister: Error exec SensingDB", http.StatusInternalServerError)
 		}
@@ -362,8 +393,12 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 		registerPNodeID := inputFormat.PNodeID
 		bufferSensorData[registerPNodeID] = *inputFormat
 		mu.Unlock()
+
 		// チャネルに知らせる
-		buffer_chan <- "buffered"
+		go func(buffer_chan chan string) {
+			transmit_string := registerPNodeID
+			buffer_chan <- transmit_string
+		}(buffer_chan)
 
 		fmt.Println("Data Inserted Successfully!")
 		fmt.Fprintf(w, "%v\n", "Register Success")
@@ -412,6 +447,10 @@ func main() {
 		// 受信したシグナルを表示
 		fmt.Printf("Received signal: %v\n", sig)
 	*/
+
+	// VSNode-PSNode マッピングの作成
+	vsnode_psnode_mapping = createNodeMapping()
+
 	var wg sync.WaitGroup
 
 	// 初期環境構築時に作成したVSNodeのポート分だけ必要
@@ -480,4 +519,47 @@ func trimPSNodePort(vnodeid string) string {
 	id_index := vnodeid_int & mask
 	port := strconv.Itoa(base_port_int + int(id_index))
 	return port
+}
+
+func createNodeMapping() map[string]PSNode {
+	var results = make(map[string]PSNode)
+	// PSNodeのconfigファイルを検索し，ソケットファイルと一致する情報を取得する
+	psnode_json_file_path := os.Getenv("HOME") + os.Getenv("PROJECT_NAME") + "/setup/GraphDB/config/config_main_psnode.json"
+	psnodeJsonFile, err := os.Open(psnode_json_file_path)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer psnodeJsonFile.Close()
+	psnodeByteValue, _ := io.ReadAll(psnodeJsonFile)
+
+	var psnodeResult map[string][]interface{}
+	json.Unmarshal(psnodeByteValue, &psnodeResult)
+
+	psnodes := psnodeResult["psnodes"]
+	for _, v := range psnodes {
+		psnode_format := v.(map[string]interface{})
+		psnode := psnode_format["psnode"].(map[string]interface{})
+		vsnode := psnode_format["vsnode"].(map[string]interface{})
+		psnode_data_property := psnode["data-property"].(map[string]interface{})
+		vsnode_data_property := vsnode["data-property"].(map[string]interface{})
+		pnode_id := psnode_data_property["PNodeID"].(string)
+		capability := psnode_data_property["Capability"].(string)
+		vnode_id := vsnode_data_property["VNodeID"].(string)
+
+		mapping_psnode := PSNode{
+			PNodeID:    pnode_id,
+			Capability: capability,
+		}
+		results[vnode_id] = mapping_psnode
+	}
+	return results
+}
+
+func includeCapability(capabilities []string, capability string) bool {
+	for _, cap := range capabilities {
+		if cap == capability {
+			return true
+		}
+	}
+	return false
 }

@@ -77,11 +77,10 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolveCurrentNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		minValue := big.NewInt(30)
-		maxValue := big.NewInt(40)
-		randomValue, _ := rand.Int(rand.Reader, new(big.Int).Sub(maxValue, minValue))
-		result := new(big.Int).Add(randomValue, minValue)
-		value_value := float64(result.Int64())
+		randomFloat := randomFloat64()
+		min := 30.0
+		//max := 40.0
+		value_value := min + randomFloat
 
 		results := vsnode.ResolveCurrentDataByNode{
 			PNodeID:    inputFormat.PNodeID,
@@ -283,11 +282,10 @@ func generateSensordata(inputFormat *psnode.TimeSync) psnode.DataForRegist {
 			result.PNodeID = pnode_id
 			result.Capability = psnode_data_property["Capability"].(string)
 			result.Timestamp = inputFormat.CurrentTime.Format(layout)
-			minValue := big.NewInt(30)
-			maxValue := big.NewInt(40)
-			randomValue, _ := rand.Int(rand.Reader, new(big.Int).Sub(maxValue, minValue))
-			random_result := new(big.Int).Add(randomValue, minValue)
-			value_value := float64(random_result.Int64())
+			randomFloat := randomFloat64()
+			min := 30.0
+			//max := 40.0
+			value_value := min + randomFloat
 			result.Value = value_value
 			result.PSinkID = psnode_relation_label["PSink"].(string)
 			position := psnode_data_property["Position"].([]interface{})
@@ -297,114 +295,6 @@ func generateSensordata(inputFormat *psnode.TimeSync) psnode.DataForRegist {
 	}
 	return result
 }
-
-/*
-func registerSensingData(file string, t time.Time) {
-	// センサデータ登録に必要な情報の定義
-	var pnode_id, capability, psink_id string
-	var value, lat, lon float64
-	var t_now time.Time
-	var psnode_psink_label string
-
-	// PSNodeのconfigファイルを検索し，ソケットファイルと一致する情報を取得する
-	psnode_json_file_path := os.Getenv("HOME") + os.Getenv("PROJECT_NAME") + "/Main/config/json_files/config_main_psnode.json"
-	psnodeJsonFile, err := os.Open(psnode_json_file_path)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer psnodeJsonFile.Close()
-	psnodeByteValue, _ := io.ReadAll(psnodeJsonFile)
-
-	var psnodeResult map[string][]interface{}
-	json.Unmarshal(psnodeByteValue, &psnodeResult)
-
-	// psnodeソケットファイルから，vsnodeソケットファイルを生成
-	psnode_socket_file_first_underscore_index := strings.Index(file, "_")
-	psnode_socket_file_last_underscore_index := strings.LastIndex(file, "_")
-	psnode_socket_file_extension_index := strings.Index(file, ".")
-	psnode_server_num_from_socket_file := file[psnode_socket_file_first_underscore_index+1 : psnode_socket_file_last_underscore_index]
-	psnode_id_num_from_socket_file := file[psnode_socket_file_last_underscore_index+1 : psnode_socket_file_extension_index]
-
-	vsnode_id_from_socket_file := convertID(psnode_id_num_from_socket_file, 63)
-	vsnode_socket_address_from_psnode := socket_address_root + "vsnode_" + psnode_server_num_from_socket_file + "_" + vsnode_id_from_socket_file + ".sock"
-
-	psnodes := psnodeResult["psnodes"]
-	for _, v := range psnodes {
-		psnode_format := v.(map[string]interface{})
-		psnode := psnode_format["psnode"].(map[string]interface{})
-		psnode_data_property := psnode["data-property"].(map[string]interface{})
-		psnode_relation_label := psnode["relation-label"].(map[string]interface{})
-		vsnode_socket_address := psnode_data_property["SocketAddress"].(string)
-		if vsnode_socket_address == vsnode_socket_address_from_psnode {
-			pnode_id = psnode_data_property["PNodeID"].(string)
-			capability = psnode_data_property["Capability"].(string)
-			psnode_psink_label = psnode_relation_label["PSink"].(string)
-			position_interface := psnode_data_property["Position"].([]interface{})
-			lat = position_interface[0].(float64)
-			lon = position_interface[1].(float64)
-			break
-		}
-	}
-
-	// PSinkのconfigファイルを検索し，ソケットファイルと一致する情報を取得する
-	psink_json_file_path := os.Getenv("HOME") + os.Getenv("PROJECT_NAME") + "/Main/config/json_files/config_main_psink.json"
-	psinkJsonFile, err := os.Open(psink_json_file_path)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer psinkJsonFile.Close()
-	psinkByteValue, _ := io.ReadAll(psinkJsonFile)
-
-	var psinkResult map[string][]interface{}
-	json.Unmarshal(psinkByteValue, &psinkResult)
-
-	psinks := psinkResult["psinks"]
-	for _, v := range psinks {
-		psink_format := v.(map[string]interface{})
-		psink := psink_format["psink"].(map[string]interface{})
-		psink_data_property := psink["data-property"].(map[string]interface{})
-		psink_label := psink_data_property["Label"].(string)
-		if psink_label == psnode_psink_label {
-			psink_id = psink_data_property["PSinkID"].(string)
-			break
-		}
-	}
-
-	t_now = time.Now()
-	rand.Seed(time.Now().UnixNano())
-	value_min := 30.0
-	value_max := 40.0
-	value = value_min + rand.Float64()*(value_max-value_min)
-
-	// センサデータ登録用の型を指定
-	m := &m2mapi.DataForRegist{
-		PNodeID:    pnode_id,
-		Capability: capability,
-		Timestamp:  t_now.Format(layout),
-		Value:      value,
-		PSinkID:    psink_id,
-		Lat:        lat,
-		Lon:        lon,
-	}
-
-	// VSNodeへ接続
-	// ソケットファイルは自身のソケットファイルのID部分をビット変換
-	connDB, err := net.Dial(protocol, data_resister_socket)
-	if err != nil {
-		message.MyError(err, "registerSensingDB > net.Dial")
-	}
-	decoderDB := gob.NewDecoder(connDB)
-	encoderDB := gob.NewEncoder(connDB)
-
-	syncFormatClient("RegisterSensingData", decoderDB, encoderDB)
-
-	if err := encoderDB.Encode(m); err != nil {
-		message.MyError(err, "registerSensingData > encoderDB.Encode")
-	}
-	fmt.Println("Data Register Request at...", t)
-	fmt.Println("Data Register Response at...", t_now)
-}
-*/
 
 // VSNodeと型同期をするための関数
 func syncFormatServer(decoder *gob.Decoder, encoder *gob.Encoder) any {
@@ -469,4 +359,15 @@ func trimVSNodePort(pnode_id string) string {
 	id_index := pnodeid_int & mask
 	port := strconv.Itoa(base_port_int + int(id_index))
 	return port
+}
+
+func randomFloat64() float64 {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000))
+	if err != nil {
+		panic(err)
+	}
+	floatValue := new(big.Float).SetInt(n)
+	float64Value, _ := floatValue.Float64()
+	f := float64Value / 100
+	return f
 }

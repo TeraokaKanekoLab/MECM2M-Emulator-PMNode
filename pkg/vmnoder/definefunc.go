@@ -19,8 +19,8 @@ type ResolvePastDataByNode struct {
 
 type ResolveCurrentDataByNode struct {
 	// input
-	VNodeID    string `json:"vnode-id"`
-	Capability string `json:"capability"`
+	VNodeID    string   `json:"vnode-id"`
+	Capability []string `json:"capability"`
 
 	// output
 	// VNodeID (dup)
@@ -30,7 +30,7 @@ type ResolveCurrentDataByNode struct {
 type ResolveConditionDataByNode struct {
 	// input
 	VNodeID    string         `json:"vnode-id"`
-	Capability string         `json:"capability"`
+	Capability []string       `json:"capability"`
 	Condition  ConditionInput `json:"condition"`
 
 	// output
