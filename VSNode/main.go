@@ -38,7 +38,7 @@ type Format struct {
 // 充足条件データ取得用のセンサデータのバッファ．(key, value) = (PNodeID, DataForRegist)
 var bufferSensorData = make(map[string]psnode.DataForRegist)
 var mu sync.Mutex
-var buffer_chan = make(chan string)
+var buffer_chan = make(chan string, 2)
 
 func init() {
 	// .envファイルの読み込み
@@ -357,8 +357,6 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "dataRegister: Error exec SensingDB", http.StatusInternalServerError)
 		}
 
-		fmt.Println("Data Inserted Successfully!")
-
 		// バッファにセンサデータ登録
 		mu.Lock()
 		registerPNodeID := inputFormat.PNodeID
@@ -366,6 +364,9 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 		mu.Unlock()
 		// チャネルに知らせる
 		buffer_chan <- "buffered"
+
+		fmt.Println("Data Inserted Successfully!")
+		fmt.Fprintf(w, "%v\n", "Register Success")
 	} else {
 		http.Error(w, "dataRegister: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}

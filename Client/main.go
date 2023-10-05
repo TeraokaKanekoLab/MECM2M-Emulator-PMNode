@@ -22,8 +22,8 @@ func main() {
 	switch args[1] {
 	case "area":
 		data = m2mapp.ResolveAreaInput{
-			NE: m2mapp.SquarePoint{Lat: 35.533, Lon: 139.531},
-			SW: m2mapp.SquarePoint{Lat: 35.532, Lon: 139.53},
+			NE: m2mapp.SquarePoint{Lat: 35.531, Lon: 139.531},
+			SW: m2mapp.SquarePoint{Lat: 35.53, Lon: 139.53},
 		}
 		url = "http://localhost:8080/m2mapi/area"
 	case "node":
@@ -86,6 +86,7 @@ func main() {
 		url = "http://localhost:8080/m2mapi/area/extend"
 	case "time":
 		data = psnode.TimeSync{
+			PNodeID:     "2305843009213693952",
 			CurrentTime: time.Now(),
 		}
 		url = "http://localhost:14000/time"

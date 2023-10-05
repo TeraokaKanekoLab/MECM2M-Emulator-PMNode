@@ -212,7 +212,8 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 		// inputFormatにはVMNodeIDが含まれる (VMNodeRIDはない)
 
 		// Capabilityの情報をもとに，対象となるVSNodeのVSNodeIDとソケットアドレスを検索する
-		payload := `{"statements": [{"statement": "MATCH (vs:VSNode)-[:isPhysicalizedBy]->(ps:PSNode) WHERE ps.Capability = ` + inputFormat.Capability[0] + ` return vs.VNodeID, vs.SocketAddress;"}]}`
+		capability := "\\\"" + inputFormat.Capability[0] + "\\\""
+		payload := `{"statements": [{"statement": "MATCH (vs:VSNode)-[:isPhysicalizedBy]->(ps:PSNode) WHERE ps.Capability = ` + capability + ` return vs.VNodeID, vs.SocketAddress;"}]}`
 		graphdb_url := "http://" + os.Getenv("NEO4J_USERNAME") + ":" + os.Getenv("NEO4J_LOCAL_PASSWORD") + "@" + "localhost:" + os.Getenv("NEO4J_LOCAL_PORT_GOLANG") + "/db/data/transaction/commit"
 		req, _ := http.NewRequest("POST", graphdb_url, bytes.NewBuffer([]byte(payload)))
 		req.Header.Set("Content-Type", "application/json")
@@ -256,6 +257,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 		for _, vnode_set := range vsnode_result.VNode {
 			wg.Add(1)
 			go func(vnode_set vmnoder.VNodeSet) {
+				defer wg.Done()
 				vmnoder_data := vmnoder.ResolveConditionDataByNode{
 					VNodeID:    vnode_set.VNodeID,
 					Capability: inputFormat.Capability[0],
@@ -289,6 +291,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 				vmnoder_results.Values = append(vmnoder_results.Values, m2mapi_value)
 			}(vnode_set)
 		}
+		wg.Wait()
 
 		vmnoder_results.VNodeID = inputFormat.VNodeID
 

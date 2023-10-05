@@ -26,7 +26,7 @@ import (
 
 const (
 	protocol                         = "unix"
-	layout                           = "2006-01-02 15:04:05"
+	layout                           = "2006-01-02 15:04:05 +0900 JST"
 	timeSock                         = "/tmp/mecm2m/time.sock"
 	dataResisterSock                 = "/tmp/mecm2m/data_resister.sock"
 	socket_address_root              = "/tmp/mecm2m/"
@@ -174,13 +174,15 @@ func timeSync(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error marshaling data: ", err)
 			return
 		}
-		transmit_url := "http://localhost:" + vsnode_port + "//data/register"
-		_, err = http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		transmit_url := "http://localhost:" + vsnode_port + "/data/register"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 		if err != nil {
 			fmt.Println("Error making request: ", err)
 			return
 		}
 		// VSNode へのセンサデータ送信完了
+		data, err := io.ReadAll(response_data.Body)
+		fmt.Fprintf(w, "%v\n", string(data))
 	} else {
 		http.Error(w, "timeSync: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
