@@ -34,10 +34,10 @@ func main() {
 		}
 		url = "http://localhost:8080/m2mapi/node"
 	case "past_node":
-		data = m2mapi.ResolveDataByNode{
+		data = m2mapp.ResolveDataByNodeInput{
 			VNodeID:       "9223372036854775808",
-			Capability:    []string{"MaxTemp"},
-			Period:        m2mapi.PeriodInput{Start: "2023-09-25 11:59:50 +0900 JST", End: "2023-09-25 12:00:05 +0900 JST"},
+			Capability:    []string{"MaxTemp", "MaxSpeed"},
+			Period:        m2mapp.PeriodInput{Start: "2023-10-03 11:00:00 +0900 JST", End: "2023-10-03 12:00:03 +0900 JST"},
 			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/past/node"

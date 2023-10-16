@@ -61,8 +61,18 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "resolvePastNode: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
+		transmit_request := vmnoder.ResolvePastDataByNode{
+			VNodeID:    inputFormat.VNodeID,
+			Capability: inputFormat.Capability,
+			Period:     vmnoder.PeriodInput{Start: inputFormat.Period.Start, End: inputFormat.Period.End},
+		}
+		transmit_data, err := json.Marshal(transmit_request)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
 		transmit_url := "http://" + inputFormat.SocketAddress + "/primapi/data/past/node"
-		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(body))
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 		if err != nil {
 			fmt.Println("Error making request:", err)
 			return
@@ -70,10 +80,21 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 		defer response_data.Body.Close()
 
 		byteArray, _ := io.ReadAll(response_data.Body)
-		var results m2mapi.ResolveDataByNode
-		if err = json.Unmarshal(byteArray, &results); err != nil {
+		var vsnode_results vmnoder.ResolvePastDataByNode
+		if err = json.Unmarshal(byteArray, &vsnode_results); err != nil {
 			fmt.Println("Error unmarshaling data: ", err)
 			return
+		}
+
+		results := m2mapi.ResolveDataByNode{}
+		results.VNodeID = vsnode_results.VNodeID
+		for _, val := range vsnode_results.Values {
+			v := m2mapi.Value{
+				Capability: val.Capability,
+				Time:       val.Time,
+				Value:      val.Value,
+			}
+			results.Values = append(results.Values, v)
 		}
 
 		jsonData, err := json.Marshal(results)

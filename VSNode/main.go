@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -96,7 +97,12 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 
 		var cmd string
 		table := os.Getenv("MYSQL_TABLE")
-		cmd = "SELECT * FROM " + table + " WHERE PNodeID = \"" + pnode_id + "\" AND Capability = \"" + capability + "\" AND Timestamp > \"" + start + "\" AND Timestamp <= \"" + end + "\";"
+		var format_capability []string
+		for _, cap := range capability {
+			cap = "\"" + cap + "\""
+			format_capability = append(format_capability, cap)
+		}
+		cmd = "SELECT * FROM " + table + " WHERE PNodeID = \"" + pnode_id + "\" AND Capability IN (" + strings.Join(format_capability, ",") + ") AND Timestamp > \"" + start + "\" AND Timestamp <= \"" + end + "\";"
 
 		rows, err := DBConnection.Query(cmd)
 		if err != nil {
@@ -104,20 +110,40 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 		}
 		defer rows.Close()
 
-		var vnode_id string
-		var vals []m2mapi.Value
+		// vsnodeが受信する型として情報を持たせておく
+		var sensing_db_results []vsnode.ResolvePastDataByNode
 		for rows.Next() {
 			field := []string{"0", "0", "0", "0", "0", "0", "0"}
 			// PNodeID, Capability, Timestamp, Value, PSinkID, Lat, Lon
 			err := rows.Scan(&field[0], &field[1], &field[2], &field[3], &field[4], &field[5], &field[6])
 			if err != nil {
-				fmt.Println(err)
 				http.Error(w, "resolvePastNode: Error scanning sensing data", http.StatusInternalServerError)
-				return
 			}
-			vnode_id = convertID(field[0], 63)
-			valFloat, _ := strconv.ParseFloat(field[3], 64)
-			val := m2mapi.Value{Capability: field[1], Time: field[2], Value: valFloat}
+			value_float, _ := strconv.ParseFloat(field[3], 64)
+			lat_float, _ := strconv.ParseFloat(field[5], 64)
+			lon_float, _ := strconv.ParseFloat(field[6], 64)
+			sensing_db_result := vsnode.ResolvePastDataByNode{
+				PNodeID:    field[0],
+				Capability: field[1],
+				Timestamp:  field[2],
+				Value:      value_float,
+				Lat:        lat_float,
+				Lon:        lon_float,
+			}
+			sensing_db_results = append(sensing_db_results, sensing_db_result)
+		}
+
+		var vnode_id string
+		var vals []m2mapi.Value
+		for i, sensing_db_result := range sensing_db_results {
+			if i == 0 {
+				vnode_id = convertID(sensing_db_result.PNodeID, 63, 61)
+			}
+			val := m2mapi.Value{
+				Capability: sensing_db_result.Capability,
+				Time:       sensing_db_result.Timestamp,
+				Value:      sensing_db_result.Value,
+			}
 			vals = append(vals, val)
 		}
 		result := m2mapi.ResolveDataByNode{
@@ -131,7 +157,6 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(string(jsonData))
 		fmt.Fprintf(w, "%v\n", string(jsonData))
 	} else {
 		http.Error(w, "resolvePastNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)

@@ -54,16 +54,31 @@ type ResolveNodeOutput struct {
 
 type ResolveDataByNodeInput struct {
 	// input
-	VNodeID       string      `json:"vnode-id"`
-	Capability    []string    `json:"capability"`
-	Period        PeriodInput `json:"period"`
-	SocketAddress string      `json:"socket-address"`
+	VNodeID       string         `json:"vnode-id"`
+	Capability    []string       `json:"capability"`
+	Period        PeriodInput    `json:"period"`
+	Condition     ConditionInput `json:"condition"`
+	SocketAddress string         `json:"socket-address"`
 }
 
 type ResolveDataByNodeOutput struct {
 	// output
 	VNodeID string  `json:"vnode-id"`
 	Values  []Value `json:"values"`
+}
+
+type ResolveDataByAreaInput struct {
+	// input
+	AD         string         `json:"ad"`
+	Capability []string       `json:"capability"`
+	Period     PeriodInput    `json:"period"`
+	Condition  ConditionInput `json:"condition"`
+	NodeType   string         `json:"node-type"`
+}
+
+type ResolveDataByAreaOutput struct {
+	// output
+	Values map[string][]Value `json:"values"`
 }
 
 type SquarePoint struct {
@@ -82,9 +97,14 @@ type Value struct {
 	Value      float64 `json:"value"`
 }
 
+type ConditionInput struct {
+	Limit   Range         `json:"limit"`
+	Timeout time.Duration `json:"timeout"`
+}
+
 type Range struct {
-	LowerLimit float64
-	UpperLimit float64
+	LowerLimit float64 `json:"lower-limit"`
+	UpperLimit float64 `json:"upper-limit"`
 }
 
 func (a *App) String() string {

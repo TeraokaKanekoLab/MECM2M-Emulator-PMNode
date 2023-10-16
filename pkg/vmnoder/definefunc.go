@@ -13,8 +13,11 @@ type ResolveNode struct {
 type ResolvePastDataByNode struct {
 	// input
 	VNodeID    string      `json:"vnode-id"`
-	Capability string      `json:"capability"`
+	Capability []string    `json:"capability"`
 	Period     PeriodInput `json:"period"`
+
+	// output
+	Values []Value `json:"values"`
 }
 
 type ResolveCurrentDataByNode struct {
