@@ -42,18 +42,18 @@ func main() {
 		}
 		url = "http://localhost:8080/m2mapi/data/past/node"
 	case "current_node":
-		data = m2mapi.ResolveDataByNode{
+		data = m2mapp.ResolveDataByNodeInput{
 			VNodeID:       "9223372036854775808",
-			Capability:    []string{"MaxTemp"},
+			Capability:    []string{"MaxTemp", "MaxSpeed"},
 			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/current/node"
 	case "condition_node":
-		data = m2mapi.ResolveDataByNode{
-			VNodeID:       "9223372036854775808",
-			Capability:    []string{"MaxTemp"},
-			Condition:     m2mapi.ConditionInput{Limit: m2mapi.Range{LowerLimit: 33, UpperLimit: 37}, Timeout: 10 * time.Second},
-			SocketAddress: "192.168.1.1:11000",
+		data = m2mapp.ResolveDataByNodeInput{
+			VNodeID:       "13835058055282163712",
+			Capability:    []string{"MaxTemp", "MaxSpeed"},
+			Condition:     m2mapp.ConditionInput{Limit: m2mapp.Range{LowerLimit: 30, UpperLimit: 40}, Timeout: 10 * time.Second},
+			SocketAddress: "192.168.11.11:13000",
 		}
 		url = "http://localhost:8080/m2mapi/data/condition/node"
 	case "past_area":

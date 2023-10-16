@@ -1,0 +1,9 @@
+{
+    "property-label": "VMNodeR",
+    "data-property": {
+        "VNodeID": "14987979559889010688",
+        "SocketAddress": "192.168.11.11:13000",
+        "VNodeModule": "/home/rand/MECM2M-Emulator-PMNode/VMNodeR/main",
+        "Description": "Description:VMNodeR"
+    }
+}

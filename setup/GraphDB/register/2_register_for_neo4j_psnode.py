@@ -28,6 +28,7 @@ for property in data["psnodes"]:
     vsnode = property["vsnode"]
     label_vsnode = vsnode["property-label"]
     data_property_vsnode = vsnode["data-property"]
+    data_property_vsnode_label = data_property_vsnode["Label"]
     node_vsnode = Node(label_vsnode, **data_property_vsnode)
     node_vsnode.add_label("VNode")
     local_graph.create(node_vsnode)
@@ -61,6 +62,15 @@ for property in data["psnodes"]:
         to_node = local_graph.nodes.match(to_node_label, **{to_node_property: to_node_value}).first()
         rel = Relationship(from_node, rel_type, to_node)
         local_graph.create(rel)
+    
+    # Create relationship vnode with vmnoder
+    rel_vmnoder = local_graph.nodes.match("VMNodeR", **{"Description": "Description:VMNodeR"}).first()
+    rel_vsnode = local_graph.nodes.match("VSNode", **{"Label": data_property_vsnode_label}).first()
+    rel_1 = Relationship(rel_vmnoder, "contains", rel_vsnode)
+    rel_2 = Relationship(rel_vsnode, "isInstalledIn", rel_vmnoder)
+    local_graph.create(rel_1)
+    local_graph.create(rel_2)
+
 
 try:
     local_graph.commit(local_tx)

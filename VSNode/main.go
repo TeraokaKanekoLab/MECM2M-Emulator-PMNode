@@ -188,7 +188,7 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 		}
 
 		port := trimPSNodePort(pnode_id)
-		transmit_url := "http://localhost:" + port + "/primapi/data/current/node"
+		transmit_url := "http://localhost:" + port + "/devapi/data/current/node"
 		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 		if err != nil {
 			fmt.Println("Error making request: ", err)
@@ -299,7 +299,7 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 					//continue Loop
 				}
 			case <-sensing_chan:
-				fmt.Println("recieve sensing data in other goroutine")
+				//fmt.Println("recieve sensing data in other goroutine")
 				nullData := m2mapi.ResolveDataByNode{
 					VNodeID: "NULL",
 				}
