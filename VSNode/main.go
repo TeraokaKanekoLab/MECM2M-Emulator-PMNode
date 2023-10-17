@@ -32,27 +32,27 @@ const (
 	link_process_socket_address_path = "/tmp/mecm2m/link-process"
 )
 
+var (
+	// 充足条件データ取得用のセンサデータのバッファ．(key, value) = (PNodeID, DataForRegist)
+	bufferSensorData = make(map[string]psnode.DataForRegist)
+	mu               sync.Mutex
+
+	// センサデータがバッファされたときに通知するチャネル
+	buffer_chan = make(chan string)
+
+	// VSNodeIDをキーとして，それに対応するPNodeIDとCapabilityを保持しておくマッピング
+	vsnode_psnode_mapping = make(map[string]PSNode)
+)
+
 type Format struct {
 	FormType string
 }
-
-// 充足条件データ取得用のセンサデータのバッファ．(key, value) = (PNodeID, DataForRegist)
-var bufferSensorData = make(map[string]psnode.DataForRegist)
-var mu sync.Mutex
-
-// センサデータがバッファされたときに通知するチャネル
-var buffer_chan = make(chan string)
-
-// ConditionAreaにおいて，他のgoroutineでセンサデータを検知してM2M APIへ送信したことを知らせるチャネル．
-var sensing_chan = make(chan string)
 
 // VSNode と PSNode のリレーションを保持しておくためのマッピング
 type PSNode struct {
 	PNodeID    string
 	Capability string
 }
-
-var vsnode_psnode_mapping = make(map[string]PSNode)
 
 func init() {
 	// .envファイルの読み込み
@@ -288,7 +288,6 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 						}
 						fmt.Fprintf(w, "%v\n", string(jsonData))
 						bufferSensorData[inputPNodeID] = psnode.DataForRegist{}
-						sensing_chan <- "sensing condition data"
 						return
 					} else {
 						continue Loop
@@ -298,18 +297,6 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 					buffer_chan <- receive_string
 					//continue Loop
 				}
-			case <-sensing_chan:
-				//fmt.Println("recieve sensing data in other goroutine")
-				nullData := m2mapi.ResolveDataByNode{
-					VNodeID: "NULL",
-				}
-				jsonData, err := json.Marshal(nullData)
-				if err != nil {
-					http.Error(w, "resolveConditionNode: Error marshaling data", http.StatusInternalServerError)
-					break Loop
-				}
-				fmt.Fprintf(w, "%v\n", string(jsonData))
-				return
 			}
 		}
 
@@ -425,8 +412,22 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 			buffer_chan <- transmit_string
 		}(buffer_chan)
 
+		// 自PMNode内部のSensingDBに登録した後，Home MEC ServerのLocal SensingDBにも登録する
+		transmit_data, err := json.Marshal(&inputFormat)
+		if err != nil {
+			fmt.Println("Error marhsaling data: ", err)
+			return
+		}
+		transmit_url := "http://localhost:" + os.Getenv("VMNODER_PORT") + "/data/register"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request: ", err)
+			return
+		}
+		byteArray, _ := io.ReadAll(response_data.Body)
+
 		fmt.Println("Data Inserted Successfully!")
-		fmt.Fprintf(w, "%v\n", "Register Success")
+		fmt.Fprintf(w, "%v\n", string(byteArray))
 	} else {
 		http.Error(w, "dataRegister: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}

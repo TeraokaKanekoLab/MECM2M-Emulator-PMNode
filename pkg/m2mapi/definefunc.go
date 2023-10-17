@@ -98,7 +98,7 @@ type ResolveDataByArea struct {
 	NodeType   string         `json:"node-type"` // VSNode or VMNode or Both
 
 	// output
-	Datas []SensorData `json:"datas"`
+	Values map[string][]Value `json:"values"` // (key, value) = (VNodeID, センサデータ)
 }
 
 type Actuate struct {
@@ -126,11 +126,6 @@ type AreaDescriptorDetail struct {
 	PAreaID []string   `json:"parea-id"`
 	VNode   []VNodeSet `json:"vnode"`
 	TTL     time.Time  `json:"ttl"`
-}
-
-type SensorData struct {
-	VNodeID string  `json:"vnode-id"`
-	Values  []Value `json:"values"`
 }
 
 type SquarePoint struct {

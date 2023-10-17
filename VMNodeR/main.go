@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
@@ -11,6 +10,7 @@ import (
 	"math/big"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
 	"mecm2m-Emulator-PMNode/pkg/message"
+	"mecm2m-Emulator-PMNode/pkg/psnode"
 	"mecm2m-Emulator-PMNode/pkg/vmnoder"
 	"net"
 	"net/http"
@@ -40,6 +40,8 @@ var (
 	buffer_chan      = make(chan string)
 	ip_address       string
 	vmnoder_port     string
+	pmnode_id        string
+	vmnode_ip_port   string
 )
 
 func init() {
@@ -49,6 +51,8 @@ func init() {
 	}
 	ip_address = os.Getenv("IP_ADDRESS")
 	vmnoder_port = os.Getenv("VMNODER_PORT")
+	pmnode_id = os.Getenv("PMNODE_ID")
+	vmnode_ip_port = os.Getenv("VMNODE_IP_PORT")
 }
 
 func resolvePastNode(w http.ResponseWriter, r *http.Request) {
@@ -506,55 +510,29 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "dataRegister: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.DataForRegist{}
+		inputFormat := &psnode.DataForRegist{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "dataRegister: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		// Local GraphDB に対して，VSNode が PSNode のセッションキーをキャッシュしていない場合に聞きに行く工程がある
+		// MEC ServerのSensingDBに登録する際は，センサデータのPNodeIDはPMNodeIDに変換する
+		inputFormat.PNodeID = pmnode_id
 
-		// SensingDBを開く
-		mysql_path := os.Getenv("MYSQL_USERNAME") + ":" + os.Getenv("MYSQL_PASSWORD") + "@tcp(127.0.0.1:" + os.Getenv("MYSQL_PORT") + ")/" + os.Getenv("MYSQL_LOCAL_DB")
-		DBConnection, err := sql.Open("mysql", mysql_path)
+		// Home MEC Server のVMNodeにセンサデータを転送
+		transmit_data, err := json.Marshal(&inputFormat)
 		if err != nil {
-			http.Error(w, "dataRegister: Error opening SensingDB", http.StatusInternalServerError)
+			fmt.Println("Error marshaling data: ", err)
+			return
 		}
-		defer DBConnection.Close()
-		if err := DBConnection.Ping(); err != nil {
-			http.Error(w, "dataRegister: Error connecting SensingDB", http.StatusInternalServerError)
-		} else {
-			message.MyMessage("DB Connection Success")
-		}
-		defer DBConnection.Close()
-		// DBへの同時接続数の制限
-		//DBConnection.SetMaxOpenConns(50)
-
-		// データの挿入
-		var cmd string
-		table := os.Getenv("MYSQL_TABLE")
-		cmd = "INSERT INTO " + table + "(PNodeID, Capability, Timestamp, Value, PSinkID, Lat, Lon) VALUES(?, ?, ?, ?, ?, ?, ?)"
-		//cmd = "INSERT INTO " + table + "(PNodeID, Capability, Timestamp) VALUES(?, ?, ?)"
-		stmt, err := DBConnection.Prepare(cmd)
+		transmit_url := "http://" + vmnode_ip_port + "/data/register"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 		if err != nil {
-			http.Error(w, "dataRegister: Error preparing SensingDB", http.StatusInternalServerError)
-		}
-		defer stmt.Close()
-
-		_, err = stmt.Exec(inputFormat.PNodeID, inputFormat.Capability, inputFormat.Timestamp, inputFormat.Value, inputFormat.PSinkID, inputFormat.Lat, inputFormat.Lon)
-		//_, err = stmt.Exec(inputFormat.PNodeID, inputFormat.Capability, inputFormat.Timestamp[:30])
-		if err != nil {
-			http.Error(w, "dataRegister: Error exec SensingDB", http.StatusInternalServerError)
+			fmt.Println("Error making request: ", err)
+			return
 		}
 
-		fmt.Println("Data Inserted Successfully!")
-
-		// バッファにセンサデータ登録
-		mu.Lock()
-		registerPNodeID := inputFormat.PNodeID
-		bufferSensorData[registerPNodeID] = *inputFormat
-		mu.Unlock()
-		// チャネルに知らせる
-		buffer_chan <- "buffered"
+		byteArray, _ := io.ReadAll(response_data.Body)
+		fmt.Fprintf(w, "%v\n", string(byteArray))
 	} else {
 		http.Error(w, "dataRegister: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
