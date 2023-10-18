@@ -51,37 +51,37 @@ func switchM2MAPI(command, ad string) (data any, url string) {
 	switch command {
 	case "area":
 		data = m2mapp.ResolveAreaInput{
-			NE: m2mapp.SquarePoint{Lat: 35.533, Lon: 139.531},
-			SW: m2mapp.SquarePoint{Lat: 35.532, Lon: 139.530},
+			NE: m2mapp.SquarePoint{Lat: 35.531, Lon: 139.531},
+			SW: m2mapp.SquarePoint{Lat: 35.530, Lon: 139.530},
 		}
 		url = "http://localhost:8080/m2mapi/area"
 	case "node":
 		data = m2mapp.ResolveNodeInput{
 			AD:         ad,
 			Capability: []string{"MaxTemp", "MaxHumid", "MaxWind", "TOYOTA"},
-			NodeType:   "VMNode",
+			NodeType:   "VSNode",
 		}
 		url = "http://localhost:8080/m2mapi/node"
 	case "past_node":
 		data = m2mapp.ResolveDataByNodeInput{
-			VNodeID:       "13835058055282163712",
+			VNodeID:       "9223372036854775808",
 			Capability:    []string{"MaxTemp", "MaxHumid", "MaxSpeed"},
-			Period:        m2mapp.PeriodInput{Start: "2023-10-03 11:00:00 +0900 JST", End: "2023-10-03 12:00:13 +0900 JST"},
-			SocketAddress: "192.168.2.2:12000",
+			Period:        m2mapp.PeriodInput{Start: "2023-10-17 00:00:00 +0900 JST", End: "2023-10-17 06:00:00 +0900 JST"},
+			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/past/node"
 	case "current_node":
 		data = m2mapp.ResolveDataByNodeInput{
-			VNodeID:       "13835058055282163712",
+			VNodeID:       "9223372036854775808",
 			Capability:    []string{"MaxTemp", "MaxHumid", "MaxSpeed"},
-			SocketAddress: "192.168.11.11:13000",
+			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/current/node"
 	case "condition_node":
 		data = m2mapp.ResolveDataByNodeInput{
 			VNodeID:       "9223372036854775808",
-			Capability:    []string{"MaxTemp", "MaxSpeed"},
-			Condition:     m2mapp.ConditionInput{Limit: m2mapp.Range{LowerLimit: 30, UpperLimit: 39}, Timeout: 10 * time.Second},
+			Capability:    []string{"MaxTemp"},
+			Condition:     m2mapp.ConditionInput{Limit: m2mapp.Range{LowerLimit: 30, UpperLimit: 35}, Timeout: 10 * time.Second},
 			SocketAddress: "192.168.1.1:11000",
 		}
 		url = "http://localhost:8080/m2mapi/data/condition/node"
@@ -108,6 +108,15 @@ func switchM2MAPI(command, ad string) (data any, url string) {
 			NodeType:   "VSNode",
 		}
 		url = "http://localhost:8080/m2mapi/data/condition/area"
+	case "actuate":
+		data = m2mapp.ActuateInput{
+			VNodeID:       "9223372036854775808",
+			Capability:    "Accel",
+			Action:        "On",
+			Parameter:     10.1,
+			SocketAddress: "192.168.1.1:11000",
+		}
+		url = "http://localhost:8080/m2mapi/actuate"
 	case "extend_ad":
 		data = m2mapi.ExtendAD{
 			AD: "c000121688",
@@ -157,6 +166,8 @@ func formatBody(command string, body []byte) string {
 	case "current_area":
 		return string(body)
 	case "condition_area":
+		return string(body)
+	case "actuate":
 		return string(body)
 	case "time":
 		return string(body)

@@ -40,6 +40,18 @@ type ResolveConditionDataByNode struct {
 	Values Value
 }
 
+type Actuate struct {
+	// input
+	VNodeID       string  `json:"vnode-id"`
+	Capability    string  `json:"capability"`
+	Action        string  `json:"action"`
+	Parameter     float64 `json:"parameter"`
+	SocketAddress string  `json:"socket-address"` // 動作指示対象となるVNodeのソケットアドレス
+
+	// output
+	Status bool `json:"status"`
+}
+
 type VNodeSet struct {
 	VNodeID       string `json:"vnode-id"`
 	SocketAddress string `json:"socket-address"`

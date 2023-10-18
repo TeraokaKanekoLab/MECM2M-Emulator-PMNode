@@ -162,8 +162,6 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			fmt.Println("vsnode_results: ", vsnode_results)
-
 			results := m2mapi.ResolveDataByNode{}
 			results.VNodeID = vsnode_results.VNodeID
 			for _, val := range vsnode_results.Values {
@@ -466,31 +464,37 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "actuate: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
-		// PSNodeへリクエストを送信するためにリンクプロセスを噛ます
-		pnode_id := convertID(inputFormat.VNodeID, 63, 61)
-		link_process_socket_address := link_process_socket_address_path + "/access-network_" + pnode_id + ".sock"
-		connLinkProcess, err := net.Dial(protocol, link_process_socket_address)
+		// 入力をそのまま対象のVSNodeに転送
+		transmit_request := vmnoder.Actuate{
+			VNodeID:    inputFormat.VNodeID,
+			Capability: inputFormat.Capability,
+			Action:     inputFormat.Action,
+			Parameter:  inputFormat.Parameter,
+		}
+		transmit_data, err := json.Marshal(transmit_request)
 		if err != nil {
-			message.MyError(err, "resolveCurrentNode > net.Dial")
+			fmt.Println("Error marshaling data: ", err)
+			return
 		}
-		decoderLinkProcess := gob.NewDecoder(connLinkProcess)
-		encoderLinkProcess := gob.NewEncoder(connLinkProcess)
+		transmit_url := "http://" + inputFormat.SocketAddress + "/primapi/actuate"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request: ", err)
+			return
+		}
+		defer response_data.Body.Close()
 
-		syncFormatClient("Actuate", decoderLinkProcess, encoderLinkProcess)
-
-		if err := encoderLinkProcess.Encode(inputFormat); err != nil {
-			message.MyError(err, "resolveCurrentNode > encoderLinkProcess.Encode")
+		byteArray, _ := io.ReadAll(response_data.Body)
+		var vsnode_results vmnoder.Actuate
+		if err = json.Unmarshal(byteArray, &vsnode_results); err != nil {
+			fmt.Println("Error unmarshaling data: ", err)
+			return
 		}
 
-		// PSNodeへ
-
-		// 受信する型は m2mapi.Actuate
 		results := m2mapi.Actuate{}
-		if err := decoderLinkProcess.Decode(&results); err != nil {
-			message.MyError(err, "actuate > decoderLinkProcess.Decode")
-		}
+		results.VNodeID = vsnode_results.VNodeID
+		results.Status = vsnode_results.Status
 
-		// 最後にM2M APIへ返送
 		jsonData, err := json.Marshal(results)
 		if err != nil {
 			http.Error(w, "actuate: Error marshaling data", http.StatusInternalServerError)

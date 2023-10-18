@@ -81,6 +81,20 @@ type ResolveDataByAreaOutput struct {
 	Values map[string][]Value `json:"values"`
 }
 
+type ActuateInput struct {
+	// input
+	VNodeID       string  `json:"vnode-id"`
+	Capability    string  `json:"capability"`
+	Action        string  `json:"action"`
+	Parameter     float64 `json:"parameter"`
+	SocketAddress string  `json:"socket-address"`
+}
+
+type ActuateOutput struct {
+	// output
+	Status bool `json:"status"`
+}
+
 type SquarePoint struct {
 	Lat float64
 	Lon float64

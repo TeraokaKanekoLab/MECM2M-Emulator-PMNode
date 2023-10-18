@@ -41,7 +41,7 @@ func init() {
 	cloud_server_ip_port = os.Getenv("CLOUD_SERVER_IP_PORT")
 	connected_mec_server_ip_port = os.Getenv("CONNECTED_MEC_SERVER_IP_ADDRESS") + ":" + port
 	vmnoder_port = os.Getenv("VMNODER_PORT")
-	vmnode_id = convertID(os.Getenv("VMNODE_ID"), 63)
+	vmnode_id = convertID(os.Getenv("PMNODE_ID"), 63)
 }
 
 func main() {
@@ -69,14 +69,9 @@ func main() {
 	http.HandleFunc("/m2mapi/data/current/area", resolveCurrentArea)
 	http.HandleFunc("/m2mapi/data/condition/area", resolveConditionArea)
 	http.HandleFunc("/m2mapi/actuate", actuate)
-	http.HandleFunc("/hello", hello)
 
 	log.Printf("Connect to http://%s:%s/ for M2M API", ip_address, port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-}
-
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World\n")
 }
 
 func resolveArea(w http.ResponseWriter, r *http.Request) {
@@ -351,13 +346,17 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "actuate: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.Actuate{}
+		inputFormat := &m2mapp.ActuateInput{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "actuate: Error missmatching packet format", http.StatusInternalServerError)
 		}
 
 		// VNode もしくは VMNode へリクエスト転送
-		results := actuateFunction(inputFormat.VNodeID, inputFormat.Action, inputFormat.SocketAddress, inputFormat.Parameter)
+		m2mapi_results := actuateFunction(inputFormat.VNodeID, inputFormat.Capability, inputFormat.Action, inputFormat.SocketAddress, inputFormat.Parameter)
+		// m2mapp用に成型
+		results := m2mapp.ActuateOutput{
+			Status: m2mapi_results.Status,
+		}
 
 		fmt.Fprintf(w, "%v\n", results)
 	} else {
@@ -1014,32 +1013,104 @@ func resolveConditionAreaFunction(ad, node_type string, capability []string, con
 	return results
 }
 
-func actuateFunction(vnode_id, action, socket_address string, parameter float64) m2mapi.Actuate {
+func actuateFunction(vnode_id, capability, action, socket_address string, parameter float64) m2mapi.Actuate {
 	null_data := m2mapi.Actuate{VNodeID: "NULL"}
-
-	request_data := m2mapi.Actuate{
-		VNodeID:   vnode_id,
-		Action:    action,
-		Parameter: parameter,
-	}
-	transmit_data, err := json.Marshal(request_data)
-	if err != nil {
-		fmt.Println("Error marshaling data: ", err)
-		return null_data
-	}
-	transmit_url := "http://" + socket_address + "/primapi/actuate"
-	response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
-	if err != nil {
-		fmt.Println("Error making request: ", err)
-		return null_data
-	}
-	defer response_data.Body.Close()
-
-	byteArray, _ := io.ReadAll(response_data.Body)
 	var results m2mapi.Actuate
-	if err = json.Unmarshal(byteArray, &results); err != nil {
-		fmt.Println("Error unmarshaling data: ", err)
-		return null_data
+
+	// 入力のVNodeIDが自身のVMNodeIDと一致するか比較
+	// 一致すれば，自身のLocal GraphDBにVSNodeの検索をかける．一致しなければ，入力のSocketAddressに直接リクエスト転送する
+
+	if vnode_id == vmnode_id {
+		format_capability := "\\\"" + capability + "\\\""
+		payload := `{"statements": [{"statement": "MATCH (vs:VSNode)-[:isPhysicalizedBy]->(ps:PSNode) WHERE ps.Capability = ` + format_capability + ` return vs.VNodeID, vs.SocketAddress;"}]}`
+		graphdb_url := "http://" + os.Getenv("NEO4J_USERNAME") + ":" + os.Getenv("NEO4J_LOCAL_PASSWORD") + "@localhost:" + os.Getenv("NEO4J_LOCAL_PORT_GOLANG") + "/db/data/transaction/commit"
+		req, _ := http.NewRequest("POST", graphdb_url, bytes.NewBuffer([]byte(payload)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "*/*")
+
+		client := new(http.Client)
+		resp, err := client.Do(req)
+		if err != nil {
+			message.MyError(err, "resolvePointFunction > client.Do()")
+		}
+		defer resp.Body.Close()
+
+		byteArray, _ := io.ReadAll(resp.Body)
+		values := bodyGraphDB(byteArray)
+
+		var row_data interface{}
+		var vsnode_set_own m2mapi.VNodeSet
+		for _, v1 := range values {
+			for k2, v2 := range v1.(map[string]interface{}) {
+				if k2 == "data" {
+					for _, v3 := range v2.([]interface{}) {
+						for k4, v4 := range v3.(map[string]interface{}) {
+							if k4 == "row" {
+								row_data = v4
+								dataArray := row_data.([]interface{})
+								vsnode_set_own.VNodeID = dataArray[0].(string)
+								vsnode_set_own.VNodeSocketAddress = dataArray[1].(string)
+							}
+						}
+					}
+				}
+			}
+		}
+		// ここで，vsnode_set_own に格納されるVNodeの情報は1つだけであるという前提（ノード指定型データ取得だから）
+		// マッチする情報が得られなかった場合，この時点でレスポンスする
+		if vsnode_set_own.VNodeID == "" {
+			return null_data
+		}
+
+		transmit_request := m2mapi.Actuate{
+			VNodeID:    vsnode_set_own.VNodeID,
+			Capability: capability,
+			Action:     action,
+			Parameter:  parameter,
+		}
+		transmit_data, err := json.Marshal(transmit_request)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return null_data
+		}
+		vmnoder_url := "http://localhost:" + vmnoder_port + "/primapi/actuate"
+		response_data, err := http.Post(vmnoder_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request:", err)
+			return null_data
+		}
+		defer response_data.Body.Close()
+
+		byteArray, _ = io.ReadAll(response_data.Body)
+		if err = json.Unmarshal(byteArray, &results); err != nil {
+			fmt.Println("Error unmarshaling data: ", err)
+			return null_data
+		}
+	} else {
+		request_data := m2mapi.Actuate{
+			VNodeID:    vnode_id,
+			Capability: capability,
+			Action:     action,
+			Parameter:  parameter,
+		}
+		transmit_data, err := json.Marshal(request_data)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return null_data
+		}
+		transmit_url := "http://" + socket_address + "/primapi/actuate"
+		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
+		if err != nil {
+			fmt.Println("Error making request: ", err)
+			return null_data
+		}
+		defer response_data.Body.Close()
+
+		byteArray, _ := io.ReadAll(response_data.Body)
+		if err = json.Unmarshal(byteArray, &results); err != nil {
+			fmt.Println("Error unmarshaling data: ", err)
+			return null_data
+		}
 	}
 
 	return results

@@ -109,7 +109,7 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "actuate: Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		inputFormat := &m2mapi.Actuate{}
+		inputFormat := &vsnode.Actuate{}
 		if err := json.Unmarshal(body, inputFormat); err != nil {
 			http.Error(w, "actuate: Error missmatching packet format", http.StatusInternalServerError)
 		}
@@ -126,9 +126,9 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 		// fileに書き込むためのWriter
 		writer := bufio.NewWriter(file)
 		mu.Lock()
-		fmt.Fprintf(writer, "Lock")
-		fmt.Fprintf(writer, "VNodeID: %v, Action: %v, Parameter: %v\n", inputFormat.VNodeID, inputFormat.Action, inputFormat.Parameter)
-		fmt.Println(writer, "Unlock")
+		fmt.Fprintf(writer, "Lock\n")
+		fmt.Fprintf(writer, "VNodeID: %v,Capability: %v, Action: %v, Parameter: %v\n", inputFormat.PNodeID, inputFormat.Capability, inputFormat.Action, inputFormat.Parameter)
+		fmt.Fprintf(writer, "Unlock\n")
 		err = writer.Flush()
 		mu.Unlock()
 
@@ -136,7 +136,7 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			status = false
 		}
-		results := m2mapi.Actuate{
+		results := vsnode.Actuate{
 			Status: status,
 		}
 

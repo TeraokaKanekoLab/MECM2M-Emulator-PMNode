@@ -104,6 +104,7 @@ type ResolveDataByArea struct {
 type Actuate struct {
 	// input
 	VNodeID       string  `json:"vnode-id"`
+	Capability    string  `json:"capability"`
 	Action        string  `json:"action"`
 	Parameter     float64 `json:"parameter"`
 	SocketAddress string  `json:"socket-address"` // 動作指示対象となるVNodeのソケットアドレス
