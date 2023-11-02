@@ -426,7 +426,7 @@ func dataRegister(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error marhsaling data: ", err)
 			return
 		}
-		transmit_url := "http://localhost:" + os.Getenv("VMNODER_PORT") + "/data/register"
+		transmit_url := "http://localhost:" + os.Getenv("VMNODER_BASE_PORT") + "/data/register"
 		response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 		if err != nil {
 			fmt.Println("Error making request: ", err)

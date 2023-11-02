@@ -21,8 +21,8 @@ json_file_path = os.getenv("PROJECT_PATH") + "/setup/GraphDB/config/"
 
 vnode_id = str(int(0b1101 << 60))
 IP_ADDRESS = os.getenv("IP_ADDRESS")
-VMNODER_PORT = os.getenv("VMNODER_PORT")
-socket_address = IP_ADDRESS + ":" + VMNODER_PORT
+VMNODER_BASE_PORT = os.getenv("VMNODER_BASE_PORT")
+socket_address = IP_ADDRESS + ":" + VMNODER_BASE_PORT
 vnode_module = os.getenv("PROJECT_PATH") + "/VMNodeR/main"
 description = "Description:VMNodeR"
 

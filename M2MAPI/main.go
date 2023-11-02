@@ -40,7 +40,7 @@ func init() {
 	ip_address = os.Getenv("IP_ADDRESS")
 	cloud_server_ip_port = os.Getenv("CLOUD_SERVER_IP_PORT")
 	connected_mec_server_ip_port = os.Getenv("CONNECTED_MEC_SERVER_IP_ADDRESS") + ":" + port
-	vmnoder_port = os.Getenv("VMNODER_PORT")
+	vmnoder_port = os.Getenv("VMNODER_BASE_PORT")
 	vmnode_id = convertID(os.Getenv("PMNODE_ID"), 63)
 }
 
@@ -89,12 +89,16 @@ func resolveArea(w http.ResponseWriter, r *http.Request) {
 
 		// GraphDBへの問い合わせ
 		results := resolveAreaFunction(inputFormat.SW, inputFormat.NE)
-
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolvePoint: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
-	fmt.Println(ad_cache)
+	// fmt.Println(ad_cache)
 }
 
 func extendAD(w http.ResponseWriter, r *http.Request) {
@@ -141,8 +145,12 @@ func resolveNode(w http.ResponseWriter, r *http.Request) {
 
 		// GraphDBへの問い合わせ
 		results := resolveNodeFunction(inputFormat.AD, inputFormat.Capability, inputFormat.NodeType)
-
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolveNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -175,7 +183,12 @@ func resolvePastNode(w http.ResponseWriter, r *http.Request) {
 			results.Values = append(results.Values, v)
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolvePastNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -208,7 +221,13 @@ func resolveCurrentNode(w http.ResponseWriter, r *http.Request) {
 			results.Values = append(results.Values, v)
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		fmt.Println("results: ", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolveCurrentNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -241,7 +260,12 @@ func resolveConditionNode(w http.ResponseWriter, r *http.Request) {
 			results.Values = append(results.Values, v)
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolveConditionNode: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -390,7 +414,6 @@ func resolveAreaFunction(sw, ne m2mapp.SquarePoint) m2mapp.ResolveAreaOutput {
 	if err = json.Unmarshal(body, &area_output); err != nil {
 		fmt.Println("Error Unmarshaling: ", err)
 	}
-	fmt.Println("area_output: ", area_output)
 
 	var area_desc m2mapi.AreaDescriptor
 	area_desc.AreaDescriptorDetail = make(map[string]m2mapi.AreaDescriptorDetail)
@@ -1124,19 +1147,17 @@ func bodyGraphDB(byteArray []byte) []interface{} {
 	}
 	var values []interface{}
 	for _, v1 := range jsonBody {
-		switch t1 := v1.(type) {
+		switch v1.(type) {
 		case []interface{}:
-			for _, v2 := range v1.([]interface{}) {
-				fmt.Println("v1([]interface{}): ", v2, "type: ", t1)
+			for range v1.([]interface{}) {
 				values = v1.([]interface{})
 			}
 		case map[string]interface{}:
 			for _, v2 := range v1.(map[string]interface{}) {
-				switch t2 := v2.(type) {
+				switch v2.(type) {
 				case []interface{}:
 					values = v2.([]interface{})
 				default:
-					fmt.Println("type: ", t2)
 				}
 			}
 		default:

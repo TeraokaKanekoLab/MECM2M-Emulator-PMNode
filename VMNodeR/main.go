@@ -50,7 +50,7 @@ func init() {
 		log.Fatal(err)
 	}
 	ip_address = os.Getenv("IP_ADDRESS")
-	vmnoder_port = os.Getenv("VMNODER_PORT")
+	vmnoder_port = os.Getenv("VMNODER_BASE_PORT")
 	pmnode_id = os.Getenv("PMNODE_ID")
 	vmnode_ip_port = os.Getenv("VMNODE_IP_PORT")
 }

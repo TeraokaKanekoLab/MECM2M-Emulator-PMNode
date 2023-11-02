@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"math/rand"
 	"mecm2m-Emulator-PMNode/pkg/m2mapi"
 	"mecm2m-Emulator-PMNode/pkg/m2mapp"
+	"mecm2m-Emulator-PMNode/pkg/message"
 	"mecm2m-Emulator-PMNode/pkg/psnode"
 	"net/http"
 	"os"
@@ -85,9 +87,6 @@ func main() {
 		}
 
 		fmt.Fprintf(file, "%s", results.AD)
-
-		//byte_data, _ := json.Marshal(results.AD)
-		//file.Write(byte_data)
 	case "node":
 		// node,csv の初期化
 		path := os.Getenv("HOME") + os.Getenv("PROJECT_NAME") + "/Client/node.csv"
@@ -160,47 +159,74 @@ func switchM2MAPI(command string) (data any, url string) {
 		}
 		url = "http://localhost:8080/m2mapi/node"
 	case "past_node":
-		file, _ := os.Open("node.csv")
-		defer file.Close()
+		var vnode_id, socket_address string
+		if *target == "own" {
+			vnode_id = convertID(os.Getenv("PMNODE_ID"), 63)
+			socket_address = "localhost:" + os.Getenv("VMNODER_BASE_PORT")
+		} else if *target == "other" {
+			file, _ := os.Open("node.csv")
+			defer file.Close()
 
-		reader := csv.NewReader(file)
-		rows, _ := reader.ReadAll()
+			reader := csv.NewReader(file)
+			rows, _ := reader.ReadAll()
 
-		randomIndex := rand.Intn(len(rows))
-		vnode_id := rows[randomIndex][0]
-		socket_address := rows[randomIndex][1]
+			randomIndex := rand.Intn(len(rows))
+			vnode_id = rows[randomIndex][0]
+			socket_address = rows[randomIndex][1]
+		}
 		second := fmt.Sprintf("%0*d", 2, *period%60)
 		minute := fmt.Sprintf("%0*d", 2, *period/60)
 		end := "2023-10-31 10:" + minute + ":" + second + " +0900 JST"
 		data = m2mapp.ResolveDataByNodeInput{
 			VNodeID:       vnode_id,
-			Capability:    []string{"Temperature", "Humidity", "WindSpeed"},
+			Capability:    []string{"Direction", "Temperature"},
 			Period:        m2mapp.PeriodInput{Start: start, End: end},
 			SocketAddress: socket_address,
 		}
 		url = "http://localhost:8080/m2mapi/data/past/node"
 	case "current_node":
-		file, _ := os.Open("node.csv")
-		defer file.Close()
+		var vnode_id, socket_address string
+		if *target == "own" {
+			vnode_id = convertID(os.Getenv("PMNODE_ID"), 63)
+			socket_address = "localhost:" + os.Getenv("VMNODER_BASE_PORT")
+		} else if *target == "other" {
+			file, _ := os.Open("node.csv")
+			defer file.Close()
 
-		reader := csv.NewReader(file)
-		rows, _ := reader.ReadAll()
+			reader := csv.NewReader(file)
+			rows, _ := reader.ReadAll()
 
-		randomIndex := rand.Intn(len(rows))
-		vnode_id := rows[randomIndex][0]
-		socket_address := rows[randomIndex][1]
+			randomIndex := rand.Intn(len(rows))
+			vnode_id = rows[randomIndex][0]
+			socket_address = rows[randomIndex][1]
+		}
 		data = m2mapp.ResolveDataByNodeInput{
 			VNodeID:       vnode_id,
-			Capability:    []string{"Temperature", "Humidity", "WindSpeed"},
+			Capability:    []string{"Direction", "Temperature"},
 			SocketAddress: socket_address,
 		}
 		url = "http://localhost:8080/m2mapi/data/current/node"
 	case "condition_node":
+		var vnode_id, socket_address string
+		if *target == "own" {
+			vnode_id = convertID(os.Getenv("PMNODE_ID"), 63)
+			socket_address = "localhost:" + os.Getenv("VMNODER_BASE_PORT")
+		} else if *target == "other" {
+			file, _ := os.Open("node.csv")
+			defer file.Close()
+
+			reader := csv.NewReader(file)
+			rows, _ := reader.ReadAll()
+
+			randomIndex := rand.Intn(len(rows))
+			vnode_id = rows[randomIndex][0]
+			socket_address = rows[randomIndex][1]
+		}
 		data = m2mapp.ResolveDataByNodeInput{
-			VNodeID:       "9223372036854775808",
-			Capability:    []string{"Temperature", "Humidity", "WindSpeed"},
+			VNodeID:       vnode_id,
+			Capability:    []string{"Direction", "Temperature"},
 			Condition:     m2mapp.ConditionInput{Limit: m2mapp.Range{LowerLimit: 30, UpperLimit: 39}, Timeout: 10 * time.Second},
-			SocketAddress: "192.168.1.1:11000",
+			SocketAddress: socket_address,
 		}
 		url = "http://localhost:8080/m2mapi/data/condition/node"
 	case "past_area":
@@ -315,4 +341,19 @@ func formatBody(command string, body []byte) string {
 	default:
 		return results
 	}
+}
+
+func convertID(id string, pos ...int) string {
+	id_int := new(big.Int)
+
+	_, ok := id_int.SetString(id, 10)
+	if !ok {
+		message.MyMessage("Failed to convert string to big.Int")
+	}
+
+	for _, position := range pos {
+		mask := new(big.Int).Lsh(big.NewInt(1), uint(position))
+		id_int.Xor(id_int, mask)
+	}
+	return id_int.String()
 }

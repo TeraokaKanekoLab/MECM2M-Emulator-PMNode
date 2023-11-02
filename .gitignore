@@ -7,7 +7,6 @@
 /setup/GraphDB/config/
 /Client/
 /PSNode/initial_environment.json
-/VMNode/initial_environment.json
 /VSNode/initial_environment.json
 /setup/SensingDB/insert_file.sql
-/setup/GraphDB/config/
+/LinkProcess/access_network_link_process.json

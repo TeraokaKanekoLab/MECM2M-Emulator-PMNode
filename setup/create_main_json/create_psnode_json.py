@@ -116,20 +116,20 @@ capabilities = {"AirFlowMeter":"AirIntakeAmount",
 
 # PSNode/initial_environment.json の初期化
 psnode_dir_path = os.getenv("PROJECT_PATH") + "/PSNode/"
-initial_environment_file = psnode_dir_path + "initial_environment.json"
+psnode_initial_environment_file = psnode_dir_path + "initial_environment.json"
 port_array = {
     "ports": []
 }
-with open(initial_environment_file, 'w') as file:
+with open(psnode_initial_environment_file, 'w') as file:
     json.dump(port_array, file, indent=4)
 
 # VSNode/initial_environment.json の初期化
 vsnode_dir_path = os.getenv("PROJECT_PATH") + "/VSNode/"
-initial_environment_file = vsnode_dir_path + "initial_environment.json"
+vsnode_initial_environment_file = vsnode_dir_path + "initial_environment.json"
 port_array = {
     "ports": []
 }
-with open(initial_environment_file, 'w') as file:
+with open(vsnode_initial_environment_file, 'w') as file:
     json.dump(port_array, file, indent=4)
 
 # PNTypeの数だけセンサノードを配置する
@@ -171,11 +171,10 @@ for i in range(2):
         data["psnodes"][-1]["psnode"] = psnode_dict
 
         # PSNode/initial_environment.json に初期環境に配置されるPSNodeのポート番号を格納
-        initial_environment_file = psnode_dir_path + "initial_environment.json"
-        with open(initial_environment_file, 'r') as file:
+        with open(psnode_initial_environment_file, 'r') as file:
             ports_data = json.load(file)
         ports_data["ports"].append(psnode_port)
-        with open(initial_environment_file, 'w') as file:
+        with open(psnode_initial_environment_file, 'w') as file:
             json.dump(ports_data, file, indent=4)
 
         # VSNode情報の追加
@@ -222,11 +221,10 @@ for i in range(2):
         data["psnodes"][-1]["vsnode"] = vsnode_dict
 
         # VSNode/initial_environment.json に初期環境に配置されるVSNodeのポート番号を格納
-        initial_environment_file = vsnode_dir_path + "initial_environment.json"
-        with open(initial_environment_file, 'r') as file:
+        with open(vsnode_initial_environment_file, 'r') as file:
             ports_data = json.load(file)
         ports_data["ports"].append(vsnode_port)
-        with open(initial_environment_file, 'w') as file:
+        with open(vsnode_initial_environment_file, 'w') as file:
             json.dump(ports_data, file, indent=4)
         
         id_index += 1
