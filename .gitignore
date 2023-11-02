@@ -10,7 +10,4 @@
 /VMNode/initial_environment.json
 /VSNode/initial_environment.json
 /setup/SensingDB/insert_file.sql
-/setup/GraphDB/config/config_main_area.json
-/setup/GraphDB/config/config_main_pmnode.json
-/setup/GraphDB/config/config_main_psink.json
-/setup/GraphDB/config/config_main_psnode.json
+/setup/GraphDB/config/
