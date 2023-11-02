@@ -55,8 +55,64 @@ data = {"psnodes":[]}
 id_index = 0
 
 # PNTypeをあらかじめ用意
-pn_types = ["SpeedMeter", "Accelerometer", "GyroSensor"]
-capabilities = {"SpeedMeter":"MaxSpeed", "Accelerometer":"MaxAccel", "GyroSensor":"Direction"}
+pn_types = ["AirFlowMeter",
+            "VacuumSensor",
+            "O2Sensor",
+            "AFSensor",
+            "SlotPositionSensor",
+            "CrankPositionSensor",
+            "CamPositionSensor",
+            "TemperatureSensorForEngineControl",
+            "KnockSensor",
+            "AccelPositionSensor",
+            "SteeringSensor",
+            "HeightControlSensor",
+            "WheelSpeedSensor",
+            "YawRateSensor",
+            "OilTemperatureSensor",
+            "TorqueSensorForElectronicPowerSteering",
+            "AirBagSensor",
+            "UltrasonicSensor",
+            "TirePressureSensor",
+            "RadarSensor",
+            "SensingCamera",
+            "TouchSensor",
+            "AutoAirConditionerSensor",
+            "AutoRightSensor",
+            "FuelSensor",
+            "RainSensor",
+            "AirQualitySensor",
+            "GyroSensor",
+            "AlcoholInterlockSensor"]
+capabilities = {"AirFlowMeter":"AirIntakeAmount",
+            "VacuumSensor":"AirIntakeAmount",
+            "O2Sensor":"OxygenConcentration",
+            "AFSensor":"OxygenConcentration",
+            "SlotPositionSensor":"AccelPosition",
+            "CrankPositionSensor":"EngineRPM",
+            "CamPositionSensor":"EngineRPM",
+            "TemperatureSensorForEngineControl":"Temperature",
+            "KnockSensor":"Knocking",
+            "AccelPositionSensor":"AccelPosition",
+            "SteeringSensor":"HandleAngle",
+            "HeightControlSensor":"Distance",
+            "WheelSpeedSensor":"WheelSpeed",
+            "YawRateSensor":"RotationalSpeed",
+            "OilTemperatureSensor":"Temperature",
+            "TorqueSensorForElectronicPowerSteering":"TorquePower",
+            "AirBagSensor":"AirBag",
+            "UltrasonicSensor":"Hz",
+            "TirePressureSensor":"kPa",
+            "RadarSensor":"Distance",
+            "SensingCamera":"Frame",
+            "TouchSensor":"TouchPosition",
+            "AutoAirConditionerSensor":"Temperature",
+            "AutoRightSensor":"Lux",
+            "FuelSensor":"Gallon",
+            "RainSensor":"Milli",
+            "AirQualitySensor":"Gass",
+            "GyroSensor":"Direction",
+            "AlcoholInterlockSensor":"Alcohol"}
 
 # PSNode/initial_environment.json の初期化
 psnode_dir_path = os.getenv("PROJECT_PATH") + "/PSNode/"
@@ -77,102 +133,103 @@ with open(initial_environment_file, 'w') as file:
     json.dump(port_array, file, indent=4)
 
 # PNTypeの数だけセンサノードを配置する
-for pn_type in pn_types:
-    data["psnodes"].append({"psnode":{}, "vsnode":{}})
+for i in range(2):
+    for pn_type in pn_types:
+        data["psnodes"].append({"psnode":{}, "vsnode":{}})
 
-    # PSNode情報の追加
-    psnode_label = "PSN" + str(id_index)
-    psnode_id = str(int(0b0010 << 60) + id_index)
-    vsnode_id = str(int(0b1000 << 60) + id_index)
-    pnode_type = pn_type
-    vnode_module = os.getenv("PROJECT_PATH") + "/VSNode/main"
-    psnode_port = PSNODE_BASE_PORT + id_index
-    vsnode_port = VSNODE_BASE_PORT + id_index
-    vnode_socket_address = IP_ADDRESS + ":" + str(vsnode_port)
-    capability = capabilities[pnode_type]
-    credential = "YES"
-    session_key = generate_random_string(10)
-    psnode_description = "Description:" + psnode_label
-    psnode_dict = {
-        "property-label": "PSNode",
-        "data-property": {
-            "Label": psnode_label,
-            "PNodeID": psnode_id,
-            "PNodeType": pnode_type,
-            "VNodeModule": vnode_module,
-            "SocketAddress": "",
-            "Position": [0.0, 0.0],
-            "Capability": capability,
-            "Credential": credential,
-            "SessionKey": session_key,
-            "Description": psnode_description
-        },
-        "object-property": [
-            
-        ]
-    }
-    data["psnodes"][-1]["psnode"] = psnode_dict
-
-    # PSNode/initial_environment.json に初期環境に配置されるPSNodeのポート番号を格納
-    initial_environment_file = psnode_dir_path + "initial_environment.json"
-    with open(initial_environment_file, 'r') as file:
-        ports_data = json.load(file)
-    ports_data["ports"].append(psnode_port)
-    with open(initial_environment_file, 'w') as file:
-        json.dump(ports_data, file, indent=4)
-
-    # VSNode情報の追加
-    vsnode_label = "VSN" + str(id_index)
-    vsnode_description = "Description:" + vsnode_label
-    vsnode_dict = {
-        "property-label": "VSNode",
-        "data-property": {
-            "Label": vsnode_label,
-            "VNodeID": vsnode_id,
-            "SocketAddress": vnode_socket_address,
-            "SoftwareModule": vnode_module,
-            "Description": vsnode_description
-        },
-        "object-property": [
-            {
-                "from": {
-                    "property-label": "PSNode",
-                    "data-property": "Label",
-                    "value": psnode_label
-                },
-                "to": {
-                    "property-label": "VSNode",
-                    "data-property": "Label",
-                    "value": vsnode_label
-                },
-                "type": "isVirtualizedBy"
+        # PSNode情報の追加
+        psnode_label = "PSN" + str(id_index)
+        psnode_id = str(int(0b0010 << 60) + id_index)
+        vsnode_id = str(int(0b1000 << 60) + id_index)
+        pnode_type = pn_type
+        vnode_module = os.getenv("PROJECT_PATH") + "/VSNode/main"
+        psnode_port = PSNODE_BASE_PORT + id_index
+        vsnode_port = VSNODE_BASE_PORT + id_index
+        vnode_socket_address = IP_ADDRESS + ":" + str(vsnode_port)
+        capability = capabilities[pnode_type]
+        credential = "YES"
+        session_key = generate_random_string(10)
+        psnode_description = "Description:" + psnode_label
+        psnode_dict = {
+            "property-label": "PSNode",
+            "data-property": {
+                "Label": psnode_label,
+                "PNodeID": psnode_id,
+                "PNodeType": pnode_type,
+                "VNodeModule": vnode_module,
+                "SocketAddress": "",
+                "Position": [0.0, 0.0],
+                "Capability": capability,
+                "Credential": credential,
+                "SessionKey": session_key,
+                "Description": psnode_description
             },
-            {
-                "from": {
-                    "property-label": "VSNode",
-                    "data-property": "Label",
-                    "value": vsnode_label
-                },
-                "to": {
-                    "property-label": "PSNode",
-                    "data-property": "Label",
-                    "value": psnode_label
-                },
-                "type": "isPhysicalizedBy"
-            }
-        ]
-    }
-    data["psnodes"][-1]["vsnode"] = vsnode_dict
+            "object-property": [
+                
+            ]
+        }
+        data["psnodes"][-1]["psnode"] = psnode_dict
 
-    # VSNode/initial_environment.json に初期環境に配置されるVSNodeのポート番号を格納
-    initial_environment_file = vsnode_dir_path + "initial_environment.json"
-    with open(initial_environment_file, 'r') as file:
-        ports_data = json.load(file)
-    ports_data["ports"].append(vsnode_port)
-    with open(initial_environment_file, 'w') as file:
-        json.dump(ports_data, file, indent=4)
-    
-    id_index += 1
+        # PSNode/initial_environment.json に初期環境に配置されるPSNodeのポート番号を格納
+        initial_environment_file = psnode_dir_path + "initial_environment.json"
+        with open(initial_environment_file, 'r') as file:
+            ports_data = json.load(file)
+        ports_data["ports"].append(psnode_port)
+        with open(initial_environment_file, 'w') as file:
+            json.dump(ports_data, file, indent=4)
+
+        # VSNode情報の追加
+        vsnode_label = "VSN" + str(id_index)
+        vsnode_description = "Description:" + vsnode_label
+        vsnode_dict = {
+            "property-label": "VSNode",
+            "data-property": {
+                "Label": vsnode_label,
+                "VNodeID": vsnode_id,
+                "SocketAddress": vnode_socket_address,
+                "SoftwareModule": vnode_module,
+                "Description": vsnode_description
+            },
+            "object-property": [
+                {
+                    "from": {
+                        "property-label": "PSNode",
+                        "data-property": "Label",
+                        "value": psnode_label
+                    },
+                    "to": {
+                        "property-label": "VSNode",
+                        "data-property": "Label",
+                        "value": vsnode_label
+                    },
+                    "type": "isVirtualizedBy"
+                },
+                {
+                    "from": {
+                        "property-label": "VSNode",
+                        "data-property": "Label",
+                        "value": vsnode_label
+                    },
+                    "to": {
+                        "property-label": "PSNode",
+                        "data-property": "Label",
+                        "value": psnode_label
+                    },
+                    "type": "isPhysicalizedBy"
+                }
+            ]
+        }
+        data["psnodes"][-1]["vsnode"] = vsnode_dict
+
+        # VSNode/initial_environment.json に初期環境に配置されるVSNodeのポート番号を格納
+        initial_environment_file = vsnode_dir_path + "initial_environment.json"
+        with open(initial_environment_file, 'r') as file:
+            ports_data = json.load(file)
+        ports_data["ports"].append(vsnode_port)
+        with open(initial_environment_file, 'w') as file:
+            json.dump(ports_data, file, indent=4)
+        
+        id_index += 1
 
 
 psnode_json = json_file_path + "config_main_psnode.json"
