@@ -300,7 +300,12 @@ func resolvePastArea(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolvePastArea: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -334,7 +339,12 @@ func resolveCurrentArea(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolveCurrentArea: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -356,7 +366,12 @@ func resolveConditionArea(w http.ResponseWriter, r *http.Request) {
 		// VNode もしくは VMNode へリクエスト転送
 		results := resolveConditionAreaFunction(inputFormat.AD, inputFormat.NodeType, inputFormat.Capability, inputFormat.Condition)
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "resolveCurrentArea: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -382,7 +397,12 @@ func actuate(w http.ResponseWriter, r *http.Request) {
 			Status: m2mapi_results.Status,
 		}
 
-		fmt.Fprintf(w, "%v\n", results)
+		results_str, err := json.Marshal(results)
+		if err != nil {
+			fmt.Println("Error marshaling data: ", err)
+			return
+		}
+		fmt.Fprintf(w, "%v\n", string(results_str))
 	} else {
 		http.Error(w, "actuate: Method not supported: Only POST request", http.StatusMethodNotAllowed)
 	}
@@ -799,6 +819,7 @@ func resolvePastAreaFunction(ad, node_type string, capability []string, period m
 					results.AD = "NULL"
 				}
 				transmit_url := "http://" + vsnode_set.VNodeSocketAddress + "/primapi/data/past/node"
+				fmt.Println("transmit url: ", transmit_url)
 				response_data, err := http.Post(transmit_url, "application/json", bytes.NewBuffer(transmit_data))
 				if err != nil {
 					fmt.Println("Error making request: ", err)

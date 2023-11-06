@@ -107,6 +107,8 @@ func main() {
 	durationInNanoseconds := float64(elapsedTime.Nanoseconds())
 	durationInMilliSeconds := durationInNanoseconds / 1e6
 	fmt.Printf("%.3f\n", durationInMilliSeconds)
+
+	fmt.Println("20231106: ", string(body))
 }
 
 func switchM2MAPI(command string) (data any, url string) {

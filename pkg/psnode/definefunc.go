@@ -18,3 +18,8 @@ type DataForRegist struct {
 	Lat        float64 `json:"lat"`
 	Lon        float64 `json:"lon"`
 }
+
+// PMNodeの移動を知らせるパッケージ
+type Mobility struct {
+	PNodeID string `json:"pnode-id"`
+}
