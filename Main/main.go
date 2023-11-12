@@ -327,8 +327,8 @@ func mobility(inputChan chan string, subSlices [][]int) {
 				}
 				defer response.Body.Close()
 			}(port)
+			time.Sleep(1000 * time.Millisecond)
 		}
-		time.Sleep(1000 * time.Millisecond)
 	}
 	wg.Wait()
 }
